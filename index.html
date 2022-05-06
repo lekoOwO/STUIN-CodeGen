@@ -516,18 +516,68 @@
                                 </div>
                             </div>
                         </div>
+                        <div v-show="code.nodes[0].os === 'RouterOS'">
+                            <div class="ts-space"></div>
+                            <div class="ts-grid is-relaxed is-stackable is-5-columns">
+                                <div class="column">
+                                    <div class="ts-text is-label">Profile</div>
+                                    <div class="ts-space"></div>
+                                    <div class="ts-select is-fluid">
+                                        <select v-model="code.nodes[0].profile">
+                                            <option :value="k" v-for="(v, k, i) in code.profiles[code.nodes[0].os]">{{ k }}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="column">
+                                    <div class="ts-text is-label">BGP Template</div>
+                                    <div class="ts-space"></div>
+                                    <div class="ts-input is-fluid">
+                                        <input type="text" placeholder="BGP Template" v-model="code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpTemplate" />
+                                    </div>
+                                </div>
+                                <div class="column">
+                                    <div class="ts-text is-label">BGP In-Filter</div>
+                                    <div class="ts-space"></div>
+                                    <div class="ts-input is-fluid">
+                                        <input type="text" placeholder="BGP In-Filter" v-model="code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpInFilter" />
+                                    </div>
+                                </div>
+                                <div class="column">
+                                    <div class="ts-text is-label">BGP Out-Filter</div>
+                                    <div class="ts-space"></div>
+                                    <div class="ts-input is-fluid">
+                                        <input type="text" placeholder="BGP Out-Filter" v-model="code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpOutFilter" />
+                                    </div>
+                                </div>
+                                <div class="column">
+                                    <div class="ts-text is-label">BGP Out-Networks</div>
+                                    <div class="ts-space"></div>
+                                    <div class="ts-input is-fluid">
+                                        <input type="text" placeholder="BGP Out-Networks" v-model="code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpOutNetwork" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="ts-space"></div>
                         <div class="ts-segment">
                             <pre class="scrollbar" style="overflow:auto;"><!--
                             --><span v-if="
                                     parsed.data.tunnelType === 'WireGuard' && 
                                     code.nodes[0].os === 'RouterOS' && 
+                                    parsed.nodes[0].wg.port.length > 0 &&
+                                    parsed.nodes[1].wg.port.length > 0 &&
+                                    parsed.nodes[1].wg.publicKey.length > 0 &&
                                     parsed.nodes[0].wg.privateKey.length > 0
                                 "><!--
 -->/interface/wireguard/add name=STUIN-{{parsed.nodes[1].siteId}}-wg private-key="{{parsed.nodes[0].wg.privateKey}}" listen-port={{parsed.nodes[0].wg.port}} mtu=1400
 /interface/wireguard/peers/add allowed-address={{parsed.nodes[1].ip}}/32,10.120.0.0/14 endpoint-address={{parsed.nodes[1].internet}} endpoint-port={{parsed.nodes[1].wg.port}} interface=STUIN-{{parsed.nodes[1].siteId}}-wg public-key="{{parsed.nodes[1].wg.publicKey}}"
 /ip/address/add address={{parsed.nodes[0].ip}}/30 interface=STUIN-{{parsed.nodes[1].siteId}}-wg
-/routing/bgp/connection/add as={{parsed.nodes[0].asn}} cisco-vpls-nlri-len-fmt=auto-bits connect=yes disabled=no input.filter=STUIN-In listen=yes local.role=ebgp name=STUIN-{{parsed.nodes[1].siteId}} output.filter-chain=STUIN-Out .network=bgp-networks .redistribute=connected,ospf,bgp remote.address={{parsed.nodes[1].ip}}/32 .as={{parsed.nodes[1].asn}} .port=179 routing-table=main<!--
+/routing/bgp/connection/add as={{parsed.nodes[0].asn}} cisco-vpls-nlri-len-fmt=auto-bits connect=yes disabled=no<!--
+    --><span v-show="code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpTemplate.length > 0"> template={{code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpTemplate}}</span><!--
+    --><span v-show="code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpInFilter.length > 0"> input.filter={{code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpInFilter}}</span><!--
+    --><span v-show="code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpOutFilter.length > 0"> output.filter={{code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpOutFilter}}</span><!--
+    --><span v-show="code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpOutNetwork.length > 0"> output.network={{code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpOutNetwork}}</span><!--
+--> listen=yes local.role=ebgp name=STUIN-{{parsed.nodes[1].siteId}} output.redistribute=connected,ospf,bgp remote.address={{parsed.nodes[1].ip}}/32 .as={{parsed.nodes[1].asn}} .port=179 routing-table=main<!--
                                 --></span><!--
                             --><span v-else-if="
                             parsed.data.tunnelType === 'GRE over IPSec' && 
@@ -536,7 +586,12 @@
                         "><!--
 -->/interface/gre/add name=STUIN-{{parsed.nodes[1].siteId}}-GRE allow-fast-path=no remote-address={{parsed.nodes[1].internet}} ipsec-secret="{{parsed.data.ipsecKey}}" mtu=1400
 /ip/address/add address={{parsed.nodes[0].ip}}/30 interface=STUIN-{{parsed.nodes[1].siteId}}-GRE
-/routing/bgp/connection/add as={{parsed.nodes[0].asn}} cisco-vpls-nlri-len-fmt=auto-bits connect=yes disabled=no input.filter=STUIN-In listen=yes local.role=ebgp name=STUIN-{{parsed.nodes[1].siteId}} output.filter-chain=STUIN-Out .network=bgp-networks .redistribute=connected,ospf,bgp remote.address={{parsed.nodes[1].ip}}/32 .as={{parsed.nodes[1].asn}} .port=179 routing-table=main<!--
+/routing/bgp/connection/add as={{parsed.nodes[0].asn}} cisco-vpls-nlri-len-fmt=auto-bits connect=yes disabled=no<!--
+    --><span v-show="code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpTemplate.length > 0"> template={{code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpTemplate}}</span><!--
+    --><span v-show="code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpInFilter.length > 0"> input.filter={{code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpInFilter}}</span><!--
+    --><span v-show="code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpOutFilter.length > 0"> output.filter={{code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpOutFilter}}</span><!--
+    --><span v-show="code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpOutNetwork.length > 0"> output.network={{code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpOutNetwork}}</span><!--
+--> listen=yes local.role=ebgp name=STUIN-{{parsed.nodes[1].siteId}} output.redistribute=connected,ospf,bgp remote.address={{parsed.nodes[1].ip}}/32 .as={{parsed.nodes[1].asn}} .port=179 routing-table=main<!--
                         --></span><!--
                             --><span v-else><!--
                                 --><div class="ts-center">⚠️條件不足，請確認輸入欄位。</div><!--
@@ -569,18 +624,68 @@
                                 </div>
                             </div>
                         </div>
+                        <div v-show="code.nodes[0].os === 'RouterOS'">
+                            <div class="ts-space"></div>
+                            <div class="ts-grid is-relaxed is-stackable is-5-columns">
+                                <div class="column">
+                                    <div class="ts-text is-label">Profile</div>
+                                    <div class="ts-space"></div>
+                                    <div class="ts-select is-fluid">
+                                        <select v-model="code.nodes[1].profile">
+                                            <option :value="k" v-for="(v, k, i) in code.profiles[code.nodes[0].os]">{{ k }}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="column">
+                                    <div class="ts-text is-label">BGP Template</div>
+                                    <div class="ts-space"></div>
+                                    <div class="ts-input is-fluid">
+                                        <input type="text" placeholder="BGP Template" v-model="code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpTemplate" />
+                                    </div>
+                                </div>
+                                <div class="column">
+                                    <div class="ts-text is-label">BGP In-Filter</div>
+                                    <div class="ts-space"></div>
+                                    <div class="ts-input is-fluid">
+                                        <input type="text" placeholder="BGP In-Filter" v-model="code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpInFilter" />
+                                    </div>
+                                </div>
+                                <div class="column">
+                                    <div class="ts-text is-label">BGP Out-Filter</div>
+                                    <div class="ts-space"></div>
+                                    <div class="ts-input is-fluid">
+                                        <input type="text" placeholder="BGP Out-Filter" v-model="code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpOutFilter" />
+                                    </div>
+                                </div>
+                                <div class="column">
+                                    <div class="ts-text is-label">BGP Out-Networks</div>
+                                    <div class="ts-space"></div>
+                                    <div class="ts-input is-fluid">
+                                        <input type="text" placeholder="BGP Out-Networks" v-model="code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpOutNetwork" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="ts-space"></div>
                         <div class="ts-segment">
                             <pre class="scrollbar" style="overflow:auto;"><!--
                             --><span v-if="
                                 parsed.data.tunnelType === 'WireGuard' && 
                                 code.nodes[1].os === 'RouterOS' && 
+                                parsed.nodes[0].wg.port.length > 0 &&
+                                parsed.nodes[1].wg.port.length > 0 &&
+                                parsed.nodes[0].wg.publicKey.length > 0 &&
                                 parsed.nodes[1].wg.privateKey.length > 0
                             "><!--
 -->/interface/wireguard/add name=STUIN-{{parsed.nodes[0].siteId}}-wg private-key="{{parsed.nodes[1].wg.privateKey}}" listen-port={{parsed.nodes[1].wg.port}} mtu=1400
 /interface/wireguard/peers/add allowed-address={{parsed.nodes[0].ip}}/32,10.120.0.0/14 endpoint-address={{parsed.nodes[0].internet}} endpoint-port={{parsed.nodes[0].wg.port}} interface=STUIN-{{parsed.nodes[0].siteId}}-wg public-key="{{parsed.nodes[0].wg.publicKey}}"
 /ip/address/add address={{parsed.nodes[1].ip}}/30 interface=STUIN-{{parsed.nodes[0].siteId}}-wg
-/routing/bgp/connection/add as={{parsed.nodes[1].asn}} cisco-vpls-nlri-len-fmt=auto-bits connect=yes disabled=no input.filter=STUIN-In listen=yes local.role=ebgp name=STUIN-{{parsed.nodes[0].siteId}} output.filter-chain=STUIN-Out .network=bgp-networks .redistribute=connected,ospf,bgp remote.address={{parsed.nodes[0].ip}}/32 .as={{parsed.nodes[0].asn}} .port=179 routing-table=main<!--
+/routing/bgp/connection/add as={{parsed.nodes[1].asn}} cisco-vpls-nlri-len-fmt=auto-bits connect=yes disabled=no<!--
+    --><span v-show="code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpTemplate.length > 0"> template={{code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpTemplate}}</span><!--
+    --><span v-show="code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpInFilter.length > 0"> input.filter={{code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpInFilter}}</span><!--
+    --><span v-show="code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpOutFilter.length > 0"> output.filter={{code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpOutFilter}}</span><!--
+    --><span v-show="code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpOutNetwork.length > 0"> output.network={{code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpOutNetwork}}</span><!--
+--> listen=yes local.role=ebgp name=STUIN-{{parsed.nodes[0].siteId}} output.redistribute=connected,ospf,bgp remote.address={{parsed.nodes[0].ip}}/32 .as={{parsed.nodes[0].asn}} .port=179 routing-table=main<!--
                             --></span><!--
                             --><span v-else-if="
                             parsed.data.tunnelType === 'GRE over IPSec' && 
@@ -589,7 +694,12 @@
                         "><!--
 -->/interface/gre/add name=STUIN-{{parsed.nodes[0].siteId}}-GRE allow-fast-path=no remote-address={{parsed.nodes[0].internet}} ipsec-secret="{{parsed.data.ipsecKey}}" mtu=1400
 /ip/address/add address={{parsed.nodes[1].ip}}/30 interface=STUIN-{{parsed.nodes[0].siteId}}-GRE
-/routing/bgp/connection/add as={{parsed.nodes[1].asn}} cisco-vpls-nlri-len-fmt=auto-bits connect=yes disabled=no input.filter=STUIN-In listen=yes local.role=ebgp name=STUIN-{{parsed.nodes[0].siteId}} output.filter-chain=STUIN-Out .network=bgp-networks .redistribute=connected,ospf,bgp remote.address={{parsed.nodes[0].ip}}/32 .as={{parsed.nodes[0].asn}} .port=179 routing-table=main<!--
+/routing/bgp/connection/add as={{parsed.nodes[1].asn}} cisco-vpls-nlri-len-fmt=auto-bits connect=yes disabled=no<!--
+    --><span v-show="code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpTemplate.length > 0"> template={{code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpTemplate}}</span><!--
+    --><span v-show="code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpInFilter.length > 0"> input.filter={{code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpInFilter}}</span><!--
+    --><span v-show="code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpOutFilter.length > 0"> output.filter={{code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpOutFilter}}</span><!--
+    --><span v-show="code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpOutNetwork.length > 0"> output.network={{code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpOutNetwork}}</span><!--
+--> listen=yes local.role=ebgp name=STUIN-{{parsed.nodes[0].siteId}} output.redistribute=connected,ospf,bgp remote.address={{parsed.nodes[0].ip}}/32 .as={{parsed.nodes[0].asn}} .port=179 routing-table=main<!--
                         --></span><!--
                         --><span v-else><!--
                             --><div class="ts-center">⚠️條件不足，請確認輸入欄位。</div><!--
@@ -700,12 +810,42 @@ WireGuard Port: {{parsed.nodes[1].wg.port}}
                         active: true,
                         nodes: [
                             {
-                                os: "RouterOS"
+                                os: "RouterOS",
+                                profile: "Leko"
                             },
                             {
-                                os: "RouterOS"
+                                os: "RouterOS",
+                                profile: "Leko"
                             }
-                        ]
+                        ],
+                        profiles: {
+                            RouterOS: {
+                                Leko: {
+                                    bgpTemplate: "Leko",
+                                    bgpInFilter: "STUIN-In",
+                                    bgpOutFilter: "STUIN-Out",
+                                    bgpOutNetwork: "bgp-networks",
+                                },
+                                Edison: {
+                                    bgpTemplate: "STUIN",
+                                    bgpInFilter: "STUIN-In",
+                                    bgpOutFilter: "STUIN-Out",
+                                    bgpOutNetwork: "STUIN-Out-Addresses",
+                                },
+                                "Guest 1": {
+                                    bgpTemplate: "",
+                                    bgpInFilter: "",
+                                    bgpOutFilter: "",
+                                    bgpOutNetwork: "",
+                                },
+                                "Guest 2": {
+                                    bgpTemplate: "",
+                                    bgpInFilter: "",
+                                    bgpOutFilter: "",
+                                    bgpOutNetwork: "",
+                                },
+                            }
+                        }
                     },
                     info: {
                         active: true,
