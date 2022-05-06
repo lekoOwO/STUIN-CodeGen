@@ -856,7 +856,9 @@ WireGuard Port: {{parsed.nodes[1].wg.port}}
             },
             methods: {
                 parse(raw) {
-                    const data = raw.split("	");
+                    const data = (raw ?? "").split("	");
+                    if (data.length < 16) return;
+                    
                     this.parsed.nodes[0].ip = data[2];
                     this.parsed.nodes[1].ip = data[3];
                     this.parsed.data.tunnelType = data[4];
