@@ -519,7 +519,7 @@
                         <div class="ts-space"></div>
                         <div class="ts-segment">
                             <pre class="scrollbar" style="overflow:auto;"><!--
-                            --><span v-show="
+                            --><span v-if="
                                     parsed.data.tunnelType === 'WireGuard' && 
                                     code.nodes[0].os === 'RouterOS' && 
                                     parsed.nodes[0].wg.privateKey.length > 0
@@ -529,7 +529,7 @@
 /ip/address/add address={{parsed.nodes[0].ip}}/30 interface=STUIN-{{parsed.nodes[1].siteId}}-wg
 /routing/bgp/connection/add as={{parsed.nodes[0].asn}} cisco-vpls-nlri-len-fmt=auto-bits connect=yes disabled=no input.filter=STUIN-In listen=yes local.role=ebgp name=STUIN-{{parsed.nodes[1].siteId}} output.filter-chain=STUIN-Out .network=bgp-networks .redistribute=connected,ospf,bgp remote.address={{parsed.nodes[1].ip}}/32 .as={{parsed.nodes[1].asn}} .port=179 routing-table=main<!--
                                 --></span><!--
-                            --><span v-show="
+                            --><span v-else-if="
                             parsed.data.tunnelType === 'GRE over IPSec' && 
                             code.nodes[0].os === 'RouterOS' && 
                             parsed.data.ipsecKey.length > 0
@@ -537,6 +537,9 @@
 -->/interface/gre/add name=STUIN-{{parsed.nodes[1].siteId}}-GRE allow-fast-path=no remote-address={{parsed.nodes[1].internet}} ipsec-secret="{{parsed.data.ipsecKey}}" mtu=1400
 /ip/address/add address={{parsed.nodes[0].ip}}/30 interface=STUIN-{{parsed.nodes[1].siteId}}-GRE
 /routing/bgp/connection/add as={{parsed.nodes[0].asn}} cisco-vpls-nlri-len-fmt=auto-bits connect=yes disabled=no input.filter=STUIN-In listen=yes local.role=ebgp name=STUIN-{{parsed.nodes[1].siteId}} output.filter-chain=STUIN-Out .network=bgp-networks .redistribute=connected,ospf,bgp remote.address={{parsed.nodes[1].ip}}/32 .as={{parsed.nodes[1].asn}} .port=179 routing-table=main<!--
+                        --></span><!--
+                            --><span v-else><!--
+                                --><div class="ts-center">⚠️條件不足，請確認輸入欄位。</div><!--
                         --></span><!--
                          --></pre>
                         </div>
@@ -569,7 +572,7 @@
                         <div class="ts-space"></div>
                         <div class="ts-segment">
                             <pre class="scrollbar" style="overflow:auto;"><!--
-                            --><span v-show="
+                            --><span v-if="
                                 parsed.data.tunnelType === 'WireGuard' && 
                                 code.nodes[1].os === 'RouterOS' && 
                                 parsed.nodes[1].wg.privateKey.length > 0
@@ -579,7 +582,7 @@
 /ip/address/add address={{parsed.nodes[1].ip}}/30 interface=STUIN-{{parsed.nodes[0].siteId}}-wg
 /routing/bgp/connection/add as={{parsed.nodes[1].asn}} cisco-vpls-nlri-len-fmt=auto-bits connect=yes disabled=no input.filter=STUIN-In listen=yes local.role=ebgp name=STUIN-{{parsed.nodes[0].siteId}} output.filter-chain=STUIN-Out .network=bgp-networks .redistribute=connected,ospf,bgp remote.address={{parsed.nodes[0].ip}}/32 .as={{parsed.nodes[0].asn}} .port=179 routing-table=main<!--
                             --></span><!--
-                            --><span v-show="
+                            --><span v-else-if="
                             parsed.data.tunnelType === 'GRE over IPSec' && 
                             code.nodes[1].os === 'RouterOS' && 
                             parsed.data.ipsecKey.length > 0
@@ -587,6 +590,9 @@
 -->/interface/gre/add name=STUIN-{{parsed.nodes[0].siteId}}-GRE allow-fast-path=no remote-address={{parsed.nodes[0].internet}} ipsec-secret="{{parsed.data.ipsecKey}}" mtu=1400
 /ip/address/add address={{parsed.nodes[1].ip}}/30 interface=STUIN-{{parsed.nodes[0].siteId}}-GRE
 /routing/bgp/connection/add as={{parsed.nodes[1].asn}} cisco-vpls-nlri-len-fmt=auto-bits connect=yes disabled=no input.filter=STUIN-In listen=yes local.role=ebgp name=STUIN-{{parsed.nodes[0].siteId}} output.filter-chain=STUIN-Out .network=bgp-networks .redistribute=connected,ospf,bgp remote.address={{parsed.nodes[0].ip}}/32 .as={{parsed.nodes[0].asn}} .port=179 routing-table=main<!--
+                        --></span><!--
+                        --><span v-else><!--
+                            --><div class="ts-center">⚠️條件不足，請確認輸入欄位。</div><!--
                         --></span><!--
                          --></pre>
                         </div>
