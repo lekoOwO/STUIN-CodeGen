@@ -11,7 +11,7 @@
     <script type="importmap">
         {
           "imports": {
-            "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js"
+            "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.prod.js"
           }
         }
     </script>
@@ -19,10 +19,12 @@
         .scrollbar::-webkit-scrollbar {
             height: 5px;
         }
+
         .scrollbar::-webkit-scrollbar-track {
             -webkit-border-radius: 10px;
             border-radius: 10px;
         }
+
         .scrollbar::-webkit-scrollbar-thumb {
             -webkit-border-radius: 4px;
             border-radius: 4px;
@@ -223,7 +225,7 @@
             <div class="ts-row is-middle-aligned">
                 <div class="column is-fluid">
                     <div class="ts-tab">
-                        <a href="https://nycu.moe" class="item is-not-minimal">STUIN Toolbox</a>
+                        <a href="#" class="item is-not-minimal">STUIN Toolbox</a>
                         <a href="#!" class="item is-active">
                             <span class="ts-icon is-code-icon"></span>
                             CodeGen</a>
@@ -239,7 +241,7 @@
         <div class="ts-space"></div>
         <div class="ts-container is-narrow">
             <div class="ts-header is-big is-heavy">STUIN CodeGen</div>
-            <div class="ts-text is-secondary" data-lang="secondary-title"></div>
+            <div class="ts-text is-secondary" data-lang="secondary-title">雷雷的 STUIN Peering CodeGen</div>
         </div>
         <div class="ts-space"></div>
     </div>
@@ -275,16 +277,31 @@
                         <div class="ts-space"></div>
                         <div class="ts-select is-fluid">
                             <select v-model="parsed.data.tunnelType">
-                                <option value="GRE Over IPSec">GRE Over IPSec</option>
+                                <option value="GRE over IPSec">GRE/IPSec</option>
                                 <option value="WireGuard">WireGuard</option>
                             </select>
                         </div>
                     </div>
-                    <div class="column is-11-wide" v-if="parsed.data.tunnelType === 'GRE Over IPSec'">
-                        <div class="ts-text is-label">IPSec Key</div>
-                        <div class="ts-space"></div>
-                        <div class="ts-input is-fluid">
-                            <input type="text" v-model="parsed.data.ipsecKey" />
+                    <div class="column is-11-wide" v-if="parsed.data.tunnelType === 'GRE over IPSec'">
+                        <div>
+                            <div class="ts-text is-label">IPSec Key</div>
+                            <div class="ts-space"></div>
+                            <div class="ts-row">
+                                <div class="column is-fluid">
+                                    <div class="ts-input is-fluid">
+                                        <input type="text" v-model="parsed.data.ipsecKey" />
+                                    </div>
+                                </div>
+                                <div class="column">
+                                    <button class="ts-button is-icon is-small is-outlined" @click="
+                                        async() => {
+                                            parsed.data.ipsecKey = await generateIPSecKey();
+                                        }
+                                    ">
+                                        <span class="ts-icon is-dice-icon"></span>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -416,42 +433,49 @@
                             </div>
                         </div>
                         <div class="ts-space"></div>
-                        <div class="ts-grid is-relaxed is-stackable" v-if="parsed.data.tunnelType === 'WireGuard'">
-                            <div class="column is-3-wide">
-                                <div class="ts-text is-label">Port</div>
-                                <div class="ts-space"></div>
-                                <div class="ts-input is-fluid">
-                                    <input type="text" v-model="parsed.nodes[1].wg.port" />
-                                </div>
+                        <div class="ts-box" v-if="parsed.data.tunnelType === 'WireGuard'">
+                            <div class="ts-content is-tertiary is-dense">
+                                WireGuard
                             </div>
-                            <div class="column is-13-wide">
-                                <div class="ts-text is-label">Public Key</div>
-                                <div class="ts-space"></div>
-                                <div class="ts-input is-fluid">
-                                    <input type="text" v-model="parsed.nodes[1].wg.publicKey" />
-                                </div>
-                            </div>
-                        </div>
-                        <div class="ts-space"></div>
-                        <div>
-                            <div class="ts-text is-label">Private Key</div>
-                            <div class="ts-space"></div>
-                            <div class="ts-row">
-                                <div class="column is-fluid">
-                                    <div class="ts-input is-fluid">
-                                        <input type="text" v-model="parsed.nodes[1].wg.privateKey" />
+                            <div class="ts-content">
+                                <div class="ts-grid is-relaxed is-stackable">
+                                    <div class="column is-3-wide">
+                                        <div class="ts-text is-label">Port</div>
+                                        <div class="ts-space"></div>
+                                        <div class="ts-input is-fluid">
+                                            <input type="text" v-model="parsed.nodes[1].wg.port" />
+                                        </div>
+                                    </div>
+                                    <div class="column is-13-wide">
+                                        <div class="ts-text is-label">Public Key</div>
+                                        <div class="ts-space"></div>
+                                        <div class="ts-input is-fluid">
+                                            <input type="text" v-model="parsed.nodes[1].wg.publicKey" />
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="column">
-                                    <button class="ts-button is-icon is-small is-outlined" @click="
+                                <div class="ts-space"></div>
+                                <div>
+                                    <div class="ts-text is-label">Private Key</div>
+                                    <div class="ts-space"></div>
+                                    <div class="ts-row">
+                                        <div class="column is-fluid">
+                                            <div class="ts-input is-fluid">
+                                                <input type="text" v-model="parsed.nodes[1].wg.privateKey" />
+                                            </div>
+                                        </div>
+                                        <div class="column">
+                                            <button class="ts-button is-icon is-small is-outlined" @click="
                                                 () => {
                                                     const {publicKey, privateKey} = generateWireGuardKeys();
                                                     parsed.nodes[1].wg.publicKey = publicKey;
                                                     parsed.nodes[1].wg.privateKey = privateKey;
                                                 }
                                             ">
-                                        <span class="ts-icon is-dice-icon"></span>
-                                    </button>
+                                                <span class="ts-icon is-dice-icon"></span>
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -477,20 +501,32 @@
                             </div>
                         </div>
                         <div class="ts-space"></div>
-                        <div class="ts-segment" v-show="
-                            parsed.data.tunnelType === 'WireGuard' && 
-                            code.nodes[0].os === 'RouterOS' && 
-                            parsed.nodes[0].wg.privateKey.length > 0
-                        ">
-                            <pre class="scrollbar" style="overflow:auto;">
-/interface/wireguard/add name=STUIN-{{parsed.nodes[1].siteId}}-wg private-key="{{parsed.nodes[0].wg.privateKey}}" listen-port={{parsed.nodes[0].wg.port}} mtu=1400
+                        <div class="ts-segment">
+                            <pre class="scrollbar" style="overflow:auto;"><!--
+                            --><span v-show="
+                                    parsed.data.tunnelType === 'WireGuard' && 
+                                    code.nodes[0].os === 'RouterOS' && 
+                                    parsed.nodes[0].wg.privateKey.length > 0
+                                "><!--
+-->/interface/wireguard/add name=STUIN-{{parsed.nodes[1].siteId}}-wg private-key="{{parsed.nodes[0].wg.privateKey}}" listen-port={{parsed.nodes[0].wg.port}} mtu=1400
 /interface/wireguard/peers/add allowed-address={{parsed.nodes[1].ip}}/32,10.120.0.0/14 endpoint-address={{parsed.nodes[1].internet}} endpoint-port={{parsed.nodes[1].wg.port}} interface=STUIN-{{parsed.nodes[1].siteId}}-wg public-key="{{parsed.nodes[1].wg.publicKey}}"
 /ip/address/add address={{parsed.nodes[0].ip}}/30 interface=STUIN-{{parsed.nodes[1].siteId}}-wg
-/routing/bgp/connection/add as={{parsed.nodes[0].asn}} cisco-vpls-nlri-len-fmt=auto-bits connect=yes disabled=no input.filter=STUIN-In listen=yes local.role=ebgp name=STUIN-{{parsed.nodes[1].siteId}} output.filter-chain=STUIN-Out .network=bgp-networks .redistribute=connected,ospf,bgp remote.address={{parsed.nodes[1].ip}}/32 .as={{parsed.nodes[1].asn}} .port=179 routing-table=main
-                            </pre>
+/routing/bgp/connection/add as={{parsed.nodes[0].asn}} cisco-vpls-nlri-len-fmt=auto-bits connect=yes disabled=no input.filter=STUIN-In listen=yes local.role=ebgp name=STUIN-{{parsed.nodes[1].siteId}} output.filter-chain=STUIN-Out .network=bgp-networks .redistribute=connected,ospf,bgp remote.address={{parsed.nodes[1].ip}}/32 .as={{parsed.nodes[1].asn}} .port=179 routing-table=main<!--
+                                --></span><!--
+                            --><span v-show="
+                            parsed.data.tunnelType === 'GRE over IPSec' && 
+                            code.nodes[0].os === 'RouterOS' && 
+                            parsed.data.ipsecKey.length > 0
+                        "><!--
+-->/interface/gre/add name=STUIN-{{parsed.nodes[1].siteId}}-GRE allow-fast-path=no remote-address={{parsed.nodes[1].internet}} ipsec-secret="{{parsed.data.ipsecKey}}" mtu=1400
+/ip/address/add address={{parsed.nodes[0].ip}}/30 interface=STUIN-{{parsed.nodes[1].siteId}}-GRE
+/routing/bgp/connection/add as={{parsed.nodes[0].asn}} cisco-vpls-nlri-len-fmt=auto-bits connect=yes disabled=no input.filter=STUIN-In listen=yes local.role=ebgp name=STUIN-{{parsed.nodes[1].siteId}} output.filter-chain=STUIN-Out .network=bgp-networks .redistribute=connected,ospf,bgp remote.address={{parsed.nodes[1].ip}}/32 .as={{parsed.nodes[1].asn}} .port=179 routing-table=main<!--
+                        --></span><!--
+                         --></pre>
                         </div>
                     </div>
                 </div>
+                <div class="ts-space"></div>
                 <div class="ts-box">
                     <div class="ts-content is-dark is-dense">Peer 2</div>
                     <div class="ts-content">
@@ -505,22 +541,87 @@
                             </div>
                         </div>
                         <div class="ts-space"></div>
-                        <div class="ts-segment" v-show="
-                            parsed.data.tunnelType === 'WireGuard' && 
-                            code.nodes[1].os === 'RouterOS' && 
-                            parsed.nodes[1].wg.privateKey.length > 0
-                        ">
-                        <pre class="scrollbar" style="overflow:auto;">
-/interface/wireguard/add name=STUIN-{{parsed.nodes[0].siteId}}-wg private-key="{{parsed.nodes[1].wg.privateKey}}" listen-port={{parsed.nodes[1].wg.port}} mtu=1400
+                        <div class="ts-segment">
+                            <pre class="scrollbar" style="overflow:auto;"><!--
+                            --><span v-show="
+                                parsed.data.tunnelType === 'WireGuard' && 
+                                code.nodes[1].os === 'RouterOS' && 
+                                parsed.nodes[1].wg.privateKey.length > 0
+                            "><!--
+-->/interface/wireguard/add name=STUIN-{{parsed.nodes[0].siteId}}-wg private-key="{{parsed.nodes[1].wg.privateKey}}" listen-port={{parsed.nodes[1].wg.port}} mtu=1400
 /interface/wireguard/peers/add allowed-address={{parsed.nodes[0].ip}}/32,10.120.0.0/14 endpoint-address={{parsed.nodes[0].internet}} endpoint-port={{parsed.nodes[0].wg.port}} interface=STUIN-{{parsed.nodes[0].siteId}}-wg public-key="{{parsed.nodes[0].wg.publicKey}}"
 /ip/address/add address={{parsed.nodes[1].ip}}/30 interface=STUIN-{{parsed.nodes[0].siteId}}-wg
-/routing/bgp/connection/add as={{parsed.nodes[1].asn}} cisco-vpls-nlri-len-fmt=auto-bits connect=yes disabled=no input.filter=STUIN-In listen=yes local.role=ebgp name=STUIN-{{parsed.nodes[0].siteId}} output.filter-chain=STUIN-Out .network=bgp-networks .redistribute=connected,ospf,bgp remote.address={{parsed.nodes[0].ip}}/32 .as={{parsed.nodes[0].asn}} .port=179 routing-table=main
-                            </pre>
+/routing/bgp/connection/add as={{parsed.nodes[1].asn}} cisco-vpls-nlri-len-fmt=auto-bits connect=yes disabled=no input.filter=STUIN-In listen=yes local.role=ebgp name=STUIN-{{parsed.nodes[0].siteId}} output.filter-chain=STUIN-Out .network=bgp-networks .redistribute=connected,ospf,bgp remote.address={{parsed.nodes[0].ip}}/32 .as={{parsed.nodes[0].asn}} .port=179 routing-table=main<!--
+                            --></span><!--
+                            --><span v-show="
+                            parsed.data.tunnelType === 'GRE over IPSec' && 
+                            code.nodes[1].os === 'RouterOS' && 
+                            parsed.data.ipsecKey.length > 0
+                        "><!--
+-->/interface/gre/add name=STUIN-{{parsed.nodes[0].siteId}}-GRE allow-fast-path=no remote-address={{parsed.nodes[0].internet}} ipsec-secret="{{parsed.data.ipsecKey}}" mtu=1400
+/ip/address/add address={{parsed.nodes[1].ip}}/30 interface=STUIN-{{parsed.nodes[0].siteId}}-GRE
+/routing/bgp/connection/add as={{parsed.nodes[1].asn}} cisco-vpls-nlri-len-fmt=auto-bits connect=yes disabled=no input.filter=STUIN-In listen=yes local.role=ebgp name=STUIN-{{parsed.nodes[0].siteId}} output.filter-chain=STUIN-Out .network=bgp-networks .redistribute=connected,ospf,bgp remote.address={{parsed.nodes[0].ip}}/32 .as={{parsed.nodes[0].asn}} .port=179 routing-table=main<!--
+                        --></span><!--
+                         --></pre>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        <div class="ts-space"></div>
+        <div :class="`ts-accordion ${info.active ? 'is-active' : ''}`">
+            <div class="title" @click="info.active = !info.active">Info Export</div>
+            <div class="content">
+                <div class="ts-box">
+                    <div class="ts-content">
+                        <div class="ts-grid is-relaxed is-2-columns">
+                            <div class="column">
+                                <div class="ts-input is-fluid">
+                                    <input type="text" v-model="info.peer1" placeholder="Peer 1"/>
+                                </div>
+                            </div>
+                            <div class="column">
+                                <div class="ts-input is-fluid">
+                                    <input type="text" v-model="info.peer2" placeholder="Peer 2"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ts-content is-tertiary">
+                        <div class="ts-center"><pre>STUIN Peering Info</pre></div>
+                        <div class="ts-space is-small"></div>
+                        <pre>
+<span v-show="parsed.data.tunnelType === 'GRE over IPSec'"><!--
+-->IPSec Key: {{parsed.data.ipsecKey}}
+</span>
+{{info.peer1}}
+Site ID: {{parsed.nodes[0].siteId}}
+AS Number: {{parsed.nodes[0].asn}}
+Tunnel IP: {{parsed.nodes[0].ip}}<span v-show="parsed.nodes[0].ip.length > 0">/30</span>
+Internet: {{parsed.nodes[0].internet}}
+<span v-show="parsed.data.tunnelType === 'WireGuard'"><!--
+-->WireGuard Public Key: {{parsed.nodes[0].wg.publicKey}}
+WireGuard Port: {{parsed.nodes[0].wg.port}}
+</span>
+{{info.peer2}}
+Site ID: {{parsed.nodes[1].siteId}}
+AS Number: {{parsed.nodes[1].asn}}
+Tunnel IP: {{parsed.nodes[1].ip}}<span v-show="parsed.nodes[1].ip.length > 0">/30</span>
+Internet: {{parsed.nodes[1].internet}}
+<span v-show="parsed.data.tunnelType === 'WireGuard'"><!--
+-->WireGuard Public Key: {{parsed.nodes[1].wg.publicKey}}
+WireGuard Port: {{parsed.nodes[1].wg.port}}
+</span><!--
+                     --></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="ts-space is-large"></div>
+        <div class="ts-text is-center-aligned is-description">
+            © <span>{{year}}</span> <a href="https://leko.moe">Leko</a>
+        </div>
+        <div class="ts-space"></div>
     </div>
 </body>
 <footer>
@@ -530,6 +631,7 @@
         createApp({
             data() {
                 return {
+                    year: new Date().getFullYear(),
                     raw: "",
                     parsed: {
                         nodes: [
@@ -567,18 +669,22 @@
                         nodes: [
                             {
                                 os: "RouterOS"
-                            }, 
+                            },
                             {
                                 os: "RouterOS"
                             }
                         ]
+                    },
+                    info: {
+                        active: true,
+                        peer1: "Peer 1",
+                        peer2: "Peer 2"
                     }
                 }
             },
             methods: {
                 parse(raw) {
                     const data = raw.split("	");
-                    console.log(data);
                     this.parsed.nodes[0].ip = data[2];
                     this.parsed.nodes[1].ip = data[3];
                     this.parsed.data.tunnelType = data[4];
@@ -597,6 +703,16 @@
                     this.parsed.nodes[1].wg.privateKey = "";
                 },
                 generateWireGuardKeys: () => window.wireguard.generateKeypair(),
+                generateIPSecKey: async() => {
+                    let array = new Uint8Array(24);
+                    window.crypto.getRandomValues(array);
+                    const base64url = await new Promise((r) => {
+                        const reader = new FileReader()
+                        reader.onload = () => r(reader.result)
+                        reader.readAsDataURL(new Blob([array]))
+                    })
+                    return base64url.split(",", 2)[1]
+                }
             }
         }).mount('#app')
     </script>
