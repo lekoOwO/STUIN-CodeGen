@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocas/4.0.3/tocas.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tocas/4.0.3/tocas.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet" />
+    <script type="importmap">
+        {
+          "imports": {
+            "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js"
+          }
+        }
+    </script>
+    <style>
+        .scrollbar::-webkit-scrollbar {
+            height: 5px;
+        }
+        .scrollbar::-webkit-scrollbar-track {
+            -webkit-border-radius: 10px;
+            border-radius: 10px;
+        }
+        .scrollbar::-webkit-scrollbar-thumb {
+            -webkit-border-radius: 4px;
+            border-radius: 4px;
+            background: var(--ts-gray-800);
+        }
+    </style>
+    <script>
+        /*! SPDX-License-Identifier: GPL-2.0
+        *
+        * Copyright (C) 2015-2020 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
+        */
+
+        (function () {
+            function gf(init) {
+                var r = new Float64Array(16);
+                if (init) {
+                    for (var i = 0; i < init.length; ++i)
+                        r[i] = init[i];
+                }
+                return r;
+            }
+
+            function pack(o, n) {
+                var b, m = gf(), t = gf();
+                for (var i = 0; i < 16; ++i)
+                    t[i] = n[i];
+                carry(t);
+                carry(t);
+                carry(t);
+                for (var j = 0; j < 2; ++j) {
+                    m[0] = t[0] - 0xffed;
+                    for (var i = 1; i < 15; ++i) {
+                        m[i] = t[i] - 0xffff - ((m[i - 1] >> 16) & 1);
+                        m[i - 1] &= 0xffff;
+                    }
+                    m[15] = t[15] - 0x7fff - ((m[14] >> 16) & 1);
+                    b = (m[15] >> 16) & 1;
+                    m[14] &= 0xffff;
+                    cswap(t, m, 1 - b);
+                }
+                for (var i = 0; i < 16; ++i) {
+                    o[2 * i] = t[i] & 0xff;
+                    o[2 * i + 1] = t[i] >> 8;
+                }
+            }
+
+            function carry(o) {
+                var c;
+                for (var i = 0; i < 16; ++i) {
+                    o[(i + 1) % 16] += (i < 15 ? 1 : 38) * Math.floor(o[i] / 65536);
+                    o[i] &= 0xffff;
+                }
+            }
+
+            function cswap(p, q, b) {
+                var t, c = ~(b - 1);
+                for (var i = 0; i < 16; ++i) {
+                    t = c & (p[i] ^ q[i]);
+                    p[i] ^= t;
+                    q[i] ^= t;
+                }
+            }
+
+            function add(o, a, b) {
+                for (var i = 0; i < 16; ++i)
+                    o[i] = (a[i] + b[i]) | 0;
+            }
+
+            function subtract(o, a, b) {
+                for (var i = 0; i < 16; ++i)
+                    o[i] = (a[i] - b[i]) | 0;
+            }
+
+            function multmod(o, a, b) {
+                var t = new Float64Array(31);
+                for (var i = 0; i < 16; ++i) {
+                    for (var j = 0; j < 16; ++j)
+                        t[i + j] += a[i] * b[j];
+                }
+                for (var i = 0; i < 15; ++i)
+                    t[i] += 38 * t[i + 16];
+                for (var i = 0; i < 16; ++i)
+                    o[i] = t[i];
+                carry(o);
+                carry(o);
+            }
+
+            function invert(o, i) {
+                var c = gf();
+                for (var a = 0; a < 16; ++a)
+                    c[a] = i[a];
+                for (var a = 253; a >= 0; --a) {
+                    multmod(c, c, c);
+                    if (a !== 2 && a !== 4)
+                        multmod(c, c, i);
+                }
+                for (var a = 0; a < 16; ++a)
+                    o[a] = c[a];
+            }
+
+            function clamp(z) {
+                z[31] = (z[31] & 127) | 64;
+                z[0] &= 248;
+            }
+
+            function generatePublicKey(privateKey) {
+                var r, z = new Uint8Array(32);
+                var a = gf([1]),
+                    b = gf([9]),
+                    c = gf(),
+                    d = gf([1]),
+                    e = gf(),
+                    f = gf(),
+                    _121665 = gf([0xdb41, 1]),
+                    _9 = gf([9]);
+                for (var i = 0; i < 32; ++i)
+                    z[i] = privateKey[i];
+                clamp(z);
+                for (var i = 254; i >= 0; --i) {
+                    r = (z[i >>> 3] >>> (i & 7)) & 1;
+                    cswap(a, b, r);
+                    cswap(c, d, r);
+                    add(e, a, c);
+                    subtract(a, a, c);
+                    add(c, b, d);
+                    subtract(b, b, d);
+                    multmod(d, e, e);
+                    multmod(f, a, a);
+                    multmod(a, c, a);
+                    multmod(c, b, e);
+                    add(e, a, c);
+                    subtract(a, a, c);
+                    multmod(b, a, a);
+                    subtract(c, d, f);
+                    multmod(a, c, _121665);
+                    add(a, a, d);
+                    multmod(c, c, a);
+                    multmod(a, d, f);
+                    multmod(d, b, _9);
+                    multmod(b, e, e);
+                    cswap(a, b, r);
+                    cswap(c, d, r);
+                }
+                invert(c, c);
+                multmod(a, a, c);
+                pack(z, a);
+                return z;
+            }
+
+            function generatePresharedKey() {
+                var privateKey = new Uint8Array(32);
+                window.crypto.getRandomValues(privateKey);
+                return privateKey;
+            }
+
+            function generatePrivateKey() {
+                var privateKey = generatePresharedKey();
+                clamp(privateKey);
+                return privateKey;
+            }
+
+            function encodeBase64(dest, src) {
+                var input = Uint8Array.from([(src[0] >> 2) & 63, ((src[0] << 4) | (src[1] >> 4)) & 63, ((src[1] << 2) | (src[2] >> 6)) & 63, src[2] & 63]);
+                for (var i = 0; i < 4; ++i)
+                    dest[i] = input[i] + 65 +
+                        (((25 - input[i]) >> 8) & 6) -
+                        (((51 - input[i]) >> 8) & 75) -
+                        (((61 - input[i]) >> 8) & 15) +
+                        (((62 - input[i]) >> 8) & 3);
+            }
+
+            function keyToBase64(key) {
+                var i, base64 = new Uint8Array(44);
+                for (i = 0; i < 32 / 3; ++i)
+                    encodeBase64(base64.subarray(i * 4), key.subarray(i * 3));
+                encodeBase64(base64.subarray(i * 4), Uint8Array.from([key[i * 3 + 0], key[i * 3 + 1], 0]));
+                base64[43] = 61;
+                return String.fromCharCode.apply(null, base64);
+            }
+
+            window.wireguard = {
+                generateKeypair: function () {
+                    var privateKey = generatePrivateKey();
+                    var publicKey = generatePublicKey(privateKey);
+                    return {
+                        publicKey: keyToBase64(publicKey),
+                        privateKey: keyToBase64(privateKey)
+                    };
+                }
+            };
+        })();
+    </script>
+</head>
+
+<body>
+    <div class="ts-content is-tertiary is-fitted">
+        <div class="ts-container ">
+            <div class="ts-row is-middle-aligned">
+                <div class="column is-fluid">
+                    <div class="ts-tab">
+                        <a href="https://nycu.moe" class="item is-not-minimal">STUIN Toolbox</a>
+                        <a href="#!" class="item is-active">
+                            <span class="ts-icon is-code-icon"></span>
+                            CodeGen</a>
+                    </div>
+                </div>
+                <div class="column"></div>
+                <div class="column"></div>
+            </div>
+        </div>
+    </div>
+    <div class="ts-divider"></div>
+    <div class="ts-content is-tertiary is-vertically-padded">
+        <div class="ts-space"></div>
+        <div class="ts-container is-narrow">
+            <div class="ts-header is-big is-heavy">STUIN CodeGen</div>
+            <div class="ts-text is-secondary" data-lang="secondary-title"></div>
+        </div>
+        <div class="ts-space"></div>
+    </div>
+    <div class="ts-divider"></div>
+    <div class="ts-space is-big"></div>
+    <div class="ts-container is-narrow" id="app">
+        <div>
+            <div class="ts-text is-label">Raw Data</div>
+            <div class="ts-space"></div>
+            <div class="ts-row">
+                <div class="column is-fluid">
+                    <div class="ts-input is-fluid is-solid">
+                        <input type="text" v-model="raw" />
+                    </div>
+                </div>
+                <div class="column">
+                    <button class="ts-button is-start-icon" @click="() => parse(raw)">
+                        <span class="ts-icon is-wand-magic-sparkles-icon"></span>
+                        產生
+                    </button>
+                </div>
+            </div>
+            <div class="ts-space is-small"></div>
+            <div class="ts-text is-description">請貼上表單行</div>
+        </div>
+        <div class="ts-space"></div>
+        <div :class="`ts-accordion ${parsed.active ? 'is-active' : ''}`">
+            <div class="title" @click="parsed.active = !parsed.active">Parsed Data</div>
+            <div class="content">
+                <div class="ts-grid is-relaxed">
+                    <div class="column is-5-wide">
+                        <div class="ts-text is-label">Tunnel Type</div>
+                        <div class="ts-space"></div>
+                        <div class="ts-select is-fluid">
+                            <select v-model="parsed.data.tunnelType">
+                                <option value="GRE Over IPSec">GRE Over IPSec</option>
+                                <option value="WireGuard">WireGuard</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="column is-11-wide" v-if="parsed.data.tunnelType === 'GRE Over IPSec'">
+                        <div class="ts-text is-label">IPSec Key</div>
+                        <div class="ts-space"></div>
+                        <div class="ts-input is-fluid">
+                            <input type="text" v-model="parsed.data.ipsecKey" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ts-space"></div>
+                <div class="ts-box">
+                    <div class="ts-content is-dark is-dense">
+                        Peer 1
+                    </div>
+                    <div class="ts-content">
+                        <div class="ts-grid is-relaxed is-stackable">
+                            <div class="column is-4-wide">
+                                <div class="ts-text is-label">Tunnel IP</div>
+                                <div class="ts-space"></div>
+                                <div class="ts-input is-fluid">
+                                    <input type="text" v-model="parsed.nodes[0].ip" />
+                                </div>
+                            </div>
+                            <div class="column is-8-wide">
+                                <div class="ts-text is-label">Site ID</div>
+                                <div class="ts-space"></div>
+                                <div class="ts-input is-fluid">
+                                    <input type="text" v-model="parsed.nodes[0].siteId" />
+                                </div>
+                            </div>
+                            <div class="column is-4-wide">
+                                <div class="ts-text is-label">AS Number</div>
+                                <div class="ts-space"></div>
+                                <div class="ts-input is-fluid">
+                                    <input type="text" v-model="parsed.nodes[0].asn" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ts-space"></div>
+                        <div class="ts-row">
+                            <div class="column is-fluid">
+                                <div class="ts-text is-label">Internet IP</div>
+                                <div class="ts-space"></div>
+                                <div class="ts-input is-fluid">
+                                    <input type="text" v-model="parsed.nodes[0].internet" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ts-space"></div>
+                        <div class="ts-box" v-if="parsed.data.tunnelType === 'WireGuard'">
+                            <div class="ts-content is-tertiary is-dense">
+                                WireGuard
+                            </div>
+                            <div class="ts-content">
+                                <div class="ts-grid is-relaxed is-stackable">
+                                    <div class="column is-3-wide">
+                                        <div class="ts-text is-label">Port</div>
+                                        <div class="ts-space"></div>
+                                        <div class="ts-input is-fluid">
+                                            <input type="text" v-model="parsed.nodes[0].wg.port" />
+                                        </div>
+                                    </div>
+                                    <div class="column is-13-wide">
+                                        <div class="ts-text is-label">Public Key</div>
+                                        <div class="ts-space"></div>
+                                        <div class="ts-input is-fluid">
+                                            <input type="text" v-model="parsed.nodes[0].wg.publicKey" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="ts-space"></div>
+                                <div>
+                                    <div class="ts-text is-label">Private Key</div>
+                                    <div class="ts-space"></div>
+                                    <div class="ts-row">
+                                        <div class="column is-fluid">
+                                            <div class="ts-input is-fluid">
+                                                <input type="text" v-model="parsed.nodes[0].wg.privateKey" />
+                                            </div>
+                                        </div>
+                                        <div class="column">
+                                            <button class="ts-button is-icon is-small is-outlined" @click="
+                                                () => {
+                                                    const {publicKey, privateKey} = generateWireGuardKeys();
+                                                    parsed.nodes[0].wg.publicKey = publicKey;
+                                                    parsed.nodes[0].wg.privateKey = privateKey;
+                                                }
+                                            ">
+                                                <span class="ts-icon is-dice-icon"></span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="ts-space"></div>
+                <div class="ts-box">
+                    <div class="ts-content is-dark is-dense">
+                        Peer 2
+                    </div>
+                    <div class="ts-content">
+                        <div class="ts-grid is-relaxed is-stackable">
+                            <div class="column is-4-wide">
+                                <div class="ts-text is-label">Tunnel IP</div>
+                                <div class="ts-space"></div>
+                                <div class="ts-input is-fluid">
+                                    <input type="text" v-model="parsed.nodes[1].ip" />
+                                </div>
+                            </div>
+                            <div class="column is-8-wide">
+                                <div class="ts-text is-label">Site ID</div>
+                                <div class="ts-space"></div>
+                                <div class="ts-input is-fluid">
+                                    <input type="text" v-model="parsed.nodes[1].siteId" />
+                                </div>
+                            </div>
+                            <div class="column is-4-wide">
+                                <div class="ts-text is-label">AS Number</div>
+                                <div class="ts-space"></div>
+                                <div class="ts-input is-fluid">
+                                    <input type="text" v-model="parsed.nodes[1].asn" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ts-space"></div>
+                        <div class="ts-row">
+                            <div class="column is-fluid">
+                                <div class="ts-text is-label">Internet IP</div>
+                                <div class="ts-space"></div>
+                                <div class="ts-input is-fluid">
+                                    <input type="text" v-model="parsed.nodes[1].internet" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ts-space"></div>
+                        <div class="ts-grid is-relaxed is-stackable" v-if="parsed.data.tunnelType === 'WireGuard'">
+                            <div class="column is-3-wide">
+                                <div class="ts-text is-label">Port</div>
+                                <div class="ts-space"></div>
+                                <div class="ts-input is-fluid">
+                                    <input type="text" v-model="parsed.nodes[1].wg.port" />
+                                </div>
+                            </div>
+                            <div class="column is-13-wide">
+                                <div class="ts-text is-label">Public Key</div>
+                                <div class="ts-space"></div>
+                                <div class="ts-input is-fluid">
+                                    <input type="text" v-model="parsed.nodes[1].wg.publicKey" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ts-space"></div>
+                        <div>
+                            <div class="ts-text is-label">Private Key</div>
+                            <div class="ts-space"></div>
+                            <div class="ts-row">
+                                <div class="column is-fluid">
+                                    <div class="ts-input is-fluid">
+                                        <input type="text" v-model="parsed.nodes[1].wg.privateKey" />
+                                    </div>
+                                </div>
+                                <div class="column">
+                                    <button class="ts-button is-icon is-small is-outlined" @click="
+                                                () => {
+                                                    const {publicKey, privateKey} = generateWireGuardKeys();
+                                                    parsed.nodes[1].wg.publicKey = publicKey;
+                                                    parsed.nodes[1].wg.privateKey = privateKey;
+                                                }
+                                            ">
+                                        <span class="ts-icon is-dice-icon"></span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="ts-space"></div>
+        <div :class="`ts-accordion ${code.active ? 'is-active' : ''}`">
+            <div class="title" @click="code.active = !code.active">Code</div>
+            <div class="content">
+                <div class="ts-box">
+                    <div class="ts-content is-dark is-dense">Peer 1</div>
+                    <div class="ts-content">
+                        <div class="ts-grid is-relaxed">
+                            <div class="column is-11-wide"></div>
+                            <div class="column is-5-wide">
+                                <div class="ts-select is-fluid">
+                                    <select v-model="code.nodes[0].os">
+                                        <option value="RouterOS">RouterOS</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ts-space"></div>
+                        <div class="ts-segment" v-show="
+                            parsed.data.tunnelType === 'WireGuard' && 
+                            code.nodes[0].os === 'RouterOS' && 
+                            parsed.nodes[0].wg.privateKey.length > 0
+                        ">
+                            <pre class="scrollbar" style="overflow:auto;">
+/interface/wireguard/add name=STUIN-{{parsed.nodes[1].siteId}}-wg private-key="{{parsed.nodes[0].wg.privateKey}}" listen-port={{parsed.nodes[0].wg.port}} mtu=1400
+/interface/wireguard/peers/add allowed-address={{parsed.nodes[1].ip}}/32,10.120.0.0/14 endpoint-address={{parsed.nodes[1].internet}} endpoint-port={{parsed.nodes[1].wg.port}} interface=STUIN-{{parsed.nodes[1].siteId}}-wg public-key="{{parsed.nodes[1].wg.publicKey}}"
+/ip/address/add address={{parsed.nodes[0].ip}}/30 interface=STUIN-{{parsed.nodes[1].siteId}}-wg
+/routing/bgp/connection/add as={{parsed.nodes[0].asn}} cisco-vpls-nlri-len-fmt=auto-bits connect=yes disabled=no input.filter=STUIN-In listen=yes local.role=ebgp name=STUIN-{{parsed.nodes[1].siteId}} output.filter-chain=STUIN-Out .network=bgp-networks .redistribute=connected,ospf,bgp remote.address={{parsed.nodes[1].ip}}/32 .as={{parsed.nodes[1].asn}} .port=179 routing-table=main
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+                <div class="ts-box">
+                    <div class="ts-content is-dark is-dense">Peer 2</div>
+                    <div class="ts-content">
+                        <div class="ts-grid is-relaxed">
+                            <div class="column is-11-wide"></div>
+                            <div class="column is-5-wide">
+                                <div class="ts-select is-fluid">
+                                    <select v-model="code.nodes[1].os">
+                                        <option value="RouterOS">RouterOS</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ts-space"></div>
+                        <div class="ts-segment" v-show="
+                            parsed.data.tunnelType === 'WireGuard' && 
+                            code.nodes[1].os === 'RouterOS' && 
+                            parsed.nodes[1].wg.privateKey.length > 0
+                        ">
+                        <pre class="scrollbar" style="overflow:auto;">
+/interface/wireguard/add name=STUIN-{{parsed.nodes[0].siteId}}-wg private-key="{{parsed.nodes[1].wg.privateKey}}" listen-port={{parsed.nodes[1].wg.port}} mtu=1400
+/interface/wireguard/peers/add allowed-address={{parsed.nodes[0].ip}}/32,10.120.0.0/14 endpoint-address={{parsed.nodes[0].internet}} endpoint-port={{parsed.nodes[0].wg.port}} interface=STUIN-{{parsed.nodes[0].siteId}}-wg public-key="{{parsed.nodes[0].wg.publicKey}}"
+/ip/address/add address={{parsed.nodes[1].ip}}/30 interface=STUIN-{{parsed.nodes[0].siteId}}-wg
+/routing/bgp/connection/add as={{parsed.nodes[1].asn}} cisco-vpls-nlri-len-fmt=auto-bits connect=yes disabled=no input.filter=STUIN-In listen=yes local.role=ebgp name=STUIN-{{parsed.nodes[0].siteId}} output.filter-chain=STUIN-Out .network=bgp-networks .redistribute=connected,ospf,bgp remote.address={{parsed.nodes[0].ip}}/32 .as={{parsed.nodes[0].asn}} .port=179 routing-table=main
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<footer>
+    <script type="module">
+        import { createApp } from 'vue'
+
+        createApp({
+            data() {
+                return {
+                    raw: "",
+                    parsed: {
+                        nodes: [
+                            {
+                                ip: "",
+                                siteId: "",
+                                asn: "",
+                                internet: "",
+                                wg: {
+                                    port: "",
+                                    publicKey: "",
+                                    privateKey: ""
+                                }
+                            },
+                            {
+                                ip: "",
+                                siteId: "",
+                                asn: "",
+                                internet: "",
+                                wg: {
+                                    port: "",
+                                    publicKey: "",
+                                    privateKey: ""
+                                }
+                            }
+                        ],
+                        data: {
+                            tunnelType: "",
+                            ipsecKey: ""
+                        },
+                        active: true
+                    },
+                    code: {
+                        active: true,
+                        nodes: [
+                            {
+                                os: "RouterOS"
+                            }, 
+                            {
+                                os: "RouterOS"
+                            }
+                        ]
+                    }
+                }
+            },
+            methods: {
+                parse(raw) {
+                    const data = raw.split("	");
+                    console.log(data);
+                    this.parsed.nodes[0].ip = data[2];
+                    this.parsed.nodes[1].ip = data[3];
+                    this.parsed.data.tunnelType = data[4];
+                    this.parsed.nodes[0].siteId = data[5];
+                    this.parsed.nodes[1].siteId = data[6];
+                    this.parsed.nodes[0].internet = data[7].split(" ")[0];
+                    this.parsed.nodes[1].internet = data[8].split(" ")[0];
+                    this.parsed.nodes[0].asn = data[9];
+                    this.parsed.nodes[1].asn = data[10];
+                    this.parsed.nodes[0].wg.port = data[11];
+                    this.parsed.nodes[1].wg.port = data[12];
+                    this.parsed.data.ipsecKey = data[13];
+                    this.parsed.nodes[0].wg.publicKey = data[14];
+                    this.parsed.nodes[1].wg.publicKey = data[15];
+                    this.parsed.nodes[0].wg.privateKey = "";
+                    this.parsed.nodes[1].wg.privateKey = "";
+                },
+                generateWireGuardKeys: () => window.wireguard.generateKeypair(),
+            }
+        }).mount('#app')
+    </script>
+</footer>
