@@ -30,6 +30,12 @@
             border-radius: 4px;
             background: var(--ts-gray-800);
         }
+
+        @media screen and (max-width: 768px) {
+            .ts-grid.is-stackable.is-relaxed {
+                gap: 2rem 0;
+            }
+        }
     </style>
     <script>
         /*! SPDX-License-Identifier: GPL-2.0
@@ -271,7 +277,7 @@
         <div :class="`ts-accordion ${parsed.active ? 'is-active' : ''}`">
             <div class="title" @click="parsed.active = !parsed.active">Parsed Data</div>
             <div class="content">
-                <div class="ts-grid is-relaxed">
+                <div class="ts-grid is-relaxed is-stackable">
                     <div class="column is-5-wide">
                         <div class="ts-text is-label">Tunnel Type</div>
                         <div class="ts-space"></div>
@@ -490,9 +496,19 @@
                 <div class="ts-box">
                     <div class="ts-content is-dark is-dense">Peer 1</div>
                     <div class="ts-content">
-                        <div class="ts-grid is-relaxed">
+                        <div class="ts-grid is-relaxed is-not-minimal">
                             <div class="column is-11-wide"></div>
                             <div class="column is-5-wide">
+                                <div class="ts-select is-fluid">
+                                    <select v-model="code.nodes[0].os">
+                                        <option value="RouterOS">RouterOS</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ts-grid is-minimal-only is-2-columns">
+                            <div class="column"></div>
+                            <div class="column">
                                 <div class="ts-select is-fluid">
                                     <select v-model="code.nodes[0].os">
                                         <option value="RouterOS">RouterOS</option>
@@ -530,9 +546,19 @@
                 <div class="ts-box">
                     <div class="ts-content is-dark is-dense">Peer 2</div>
                     <div class="ts-content">
-                        <div class="ts-grid is-relaxed">
+                        <div class="ts-grid is-relaxed is-not-minimal">
                             <div class="column is-11-wide"></div>
                             <div class="column is-5-wide">
+                                <div class="ts-select is-fluid">
+                                    <select v-model="code.nodes[1].os">
+                                        <option value="RouterOS">RouterOS</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ts-grid is-minimal-only is-2-columns">
+                            <div class="column"></div>
+                            <div class="column">
                                 <div class="ts-select is-fluid">
                                     <select v-model="code.nodes[1].os">
                                         <option value="RouterOS">RouterOS</option>
