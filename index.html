@@ -255,23 +255,32 @@
     <div class="ts-space is-big"></div>
     <div class="ts-container is-narrow" id="app">
         <div>
-            <div class="ts-text is-label">Raw Data</div>
-            <div class="ts-space"></div>
             <div class="ts-row">
+                <div class="column is-not-minimal">
+                    <div class="ts-text is-label">Line</div>
+                    <div class="ts-space"></div>
+                    <div class="ts-input is-fluid is-solid">
+                        <input type="number" />
+                    </div>
+                    <div class="ts-space is-small"></div>
+                    <div class="ts-text is-description">選填，僅供註記使用</div>
+                </div>
                 <div class="column is-fluid">
+                    <div class="ts-text is-label">Raw Data</div>
+                    <div class="ts-space"></div>
                     <div class="ts-input is-fluid is-solid">
                         <input type="text" v-model="raw" />
                     </div>
+                    <div class="ts-space is-small"></div>
+                    <div class="ts-text is-description">請貼上表單行</div>
                 </div>
-                <div class="column">
+                <div class="column is-middle-aligned">
                     <button class="ts-button is-start-icon" @click="() => parse(raw)">
                         <span class="ts-icon is-wand-magic-sparkles-icon"></span>
                         產生
                     </button>
                 </div>
             </div>
-            <div class="ts-space is-small"></div>
-            <div class="ts-text is-description">請貼上表單行</div>
         </div>
         <div class="ts-space"></div>
         <div :class="`ts-accordion ${parsed.active ? 'is-active' : ''}`">
@@ -312,9 +321,12 @@
                     </div>
                 </div>
                 <div class="ts-space"></div>
-                <div class="ts-box">
-                    <div class="ts-content is-dark is-dense">
-                        Peer 1
+                <div class="ts-box" v-show="parsed.activePeer === 1">
+                    <div class="ts-content is-secondary">
+                        <div class="ts-tab is-pilled">
+                            <a class="item is-active">Peer 1</a>
+                            <a class="item" @click="() => parsed.activePeer = 2">Peer 2</a>
+                        </div>
                     </div>
                     <div class="ts-content">
                         <div class="ts-grid is-relaxed is-stackable">
@@ -351,10 +363,8 @@
                             </div>
                         </div>
                         <div class="ts-space"></div>
-                        <div class="ts-box" v-if="parsed.data.tunnelType === 'WireGuard'">
-                            <div class="ts-content is-tertiary is-dense">
-                                WireGuard
-                            </div>
+                        <fieldset class="ts-fieldset" v-if="parsed.data.tunnelType === 'WireGuard'">
+                            <legend>WireGuard</legend>
                             <div class="ts-content">
                                 <div class="ts-grid is-relaxed is-stackable">
                                     <div class="column is-3-wide">
@@ -396,13 +406,15 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </fieldset>
                     </div>
                 </div>
-                <div class="ts-space"></div>
-                <div class="ts-box">
-                    <div class="ts-content is-dark is-dense">
-                        Peer 2
+                <div class="ts-box" v-show="parsed.activePeer === 2">
+                    <div class="ts-content is-secondary">
+                        <div class="ts-tab is-pilled">
+                            <a class="item" @click="() => parsed.activePeer = 1">Peer 1</a>
+                            <a class="item is-active">Peer 2</a>
+                        </div>
                     </div>
                     <div class="ts-content">
                         <div class="ts-grid is-relaxed is-stackable">
@@ -439,10 +451,8 @@
                             </div>
                         </div>
                         <div class="ts-space"></div>
-                        <div class="ts-box" v-if="parsed.data.tunnelType === 'WireGuard'">
-                            <div class="ts-content is-tertiary is-dense">
-                                WireGuard
-                            </div>
+                        <fieldset class="ts-fieldset" v-if="parsed.data.tunnelType === 'WireGuard'">
+                            <legend>WireGuard</legend>
                             <div class="ts-content">
                                 <div class="ts-grid is-relaxed is-stackable">
                                     <div class="column is-3-wide">
@@ -484,7 +494,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </fieldset>
                     </div>
                 </div>
             </div>
@@ -493,8 +503,13 @@
         <div :class="`ts-accordion ${code.active ? 'is-active' : ''}`">
             <div class="title" @click="code.active = !code.active">Code</div>
             <div class="content">
-                <div class="ts-box">
-                    <div class="ts-content is-dark is-dense">Peer 1</div>
+                <div class="ts-box" v-show="code.activePeer === 1">
+                    <div class="ts-content is-secondary">
+                        <div class="ts-tab is-pilled">
+                            <a class="item is-active">Peer 1</a>
+                            <a class="item" @click="() => code.activePeer = 2">Peer 2</a>
+                        </div>
+                    </div>
                     <div class="ts-content">
                         <div class="ts-grid is-relaxed is-not-minimal">
                             <div class="column is-11-wide"></div>
@@ -600,9 +615,13 @@
                         </div>
                     </div>
                 </div>
-                <div class="ts-space"></div>
-                <div class="ts-box">
-                    <div class="ts-content is-dark is-dense">Peer 2</div>
+                <div class="ts-box" v-show="code.activePeer === 2">
+                    <div class="ts-content is-secondary">
+                        <div class="ts-tab is-pilled">
+                            <a class="item" @click="() => code.activePeer = 1">Peer 1</a>
+                            <a class="item is-active" >Peer 2</a>
+                        </div>
+                    </div>
                     <div class="ts-content">
                         <div class="ts-grid is-relaxed is-not-minimal">
                             <div class="column is-11-wide"></div>
@@ -804,10 +823,12 @@ WireGuard Port: {{parsed.nodes[1].wg.port}}
                             tunnelType: "",
                             ipsecKey: ""
                         },
-                        active: true
+                        active: true,
+                        activePeer: 1
                     },
                     code: {
                         active: true,
+                        activePeer: 1,
                         nodes: [
                             {
                                 os: "RouterOS",
@@ -858,7 +879,7 @@ WireGuard Port: {{parsed.nodes[1].wg.port}}
                 parse(raw) {
                     const data = (raw ?? "").split("	");
                     if (data.length < 16) return;
-                    
+
                     this.parsed.nodes[0].ip = data[2];
                     this.parsed.nodes[1].ip = data[3];
                     this.parsed.data.tunnelType = data[4];
