@@ -590,7 +590,7 @@
 /routing/bgp/connection/add as={{parsed.nodes[0].asn}} cisco-vpls-nlri-len-fmt=auto-bits connect=yes disabled=no<!--
     --><span v-show="code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpTemplate.length > 0"> template={{code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpTemplate}}</span><!--
     --><span v-show="code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpInFilter.length > 0"> input.filter={{code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpInFilter}}</span><!--
-    --><span v-show="code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpOutFilter.length > 0"> output.filter={{code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpOutFilter}}</span><!--
+    --><span v-show="code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpOutFilter.length > 0"> output.filter-chain={{code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpOutFilter}}</span><!--
     --><span v-show="code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpOutNetwork.length > 0"> output.network={{code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpOutNetwork}}</span><!--
 --> listen=yes local.role=ebgp name=STUIN-{{parsed.nodes[1].siteId}} output.redistribute=connected,ospf,bgp remote.address={{parsed.nodes[1].ip}}/32 .as={{parsed.nodes[1].asn}} .port=179 routing-table=main<!--
                                 --></span><!--
@@ -604,7 +604,7 @@
 /routing/bgp/connection/add as={{parsed.nodes[0].asn}} cisco-vpls-nlri-len-fmt=auto-bits connect=yes disabled=no<!--
     --><span v-show="code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpTemplate.length > 0"> template={{code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpTemplate}}</span><!--
     --><span v-show="code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpInFilter.length > 0"> input.filter={{code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpInFilter}}</span><!--
-    --><span v-show="code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpOutFilter.length > 0"> output.filter={{code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpOutFilter}}</span><!--
+    --><span v-show="code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpOutFilter.length > 0"> output.filter-chain={{code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpOutFilter}}</span><!--
     --><span v-show="code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpOutNetwork.length > 0"> output.network={{code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpOutNetwork}}</span><!--
 --> listen=yes local.role=ebgp name=STUIN-{{parsed.nodes[1].siteId}} output.redistribute=connected,ospf,bgp remote.address={{parsed.nodes[1].ip}}/32 .as={{parsed.nodes[1].asn}} .port=179 routing-table=main<!--
                         --></span><!--
@@ -702,7 +702,7 @@
 /routing/bgp/connection/add as={{parsed.nodes[1].asn}} cisco-vpls-nlri-len-fmt=auto-bits connect=yes disabled=no<!--
     --><span v-show="code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpTemplate.length > 0"> template={{code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpTemplate}}</span><!--
     --><span v-show="code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpInFilter.length > 0"> input.filter={{code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpInFilter}}</span><!--
-    --><span v-show="code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpOutFilter.length > 0"> output.filter={{code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpOutFilter}}</span><!--
+    --><span v-show="code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpOutFilter.length > 0"> output.filter-chain={{code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpOutFilter}}</span><!--
     --><span v-show="code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpOutNetwork.length > 0"> output.network={{code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpOutNetwork}}</span><!--
 --> listen=yes local.role=ebgp name=STUIN-{{parsed.nodes[0].siteId}} output.redistribute=connected,ospf,bgp remote.address={{parsed.nodes[0].ip}}/32 .as={{parsed.nodes[0].asn}} .port=179 routing-table=main<!--
                             --></span><!--
@@ -716,7 +716,7 @@
 /routing/bgp/connection/add as={{parsed.nodes[1].asn}} cisco-vpls-nlri-len-fmt=auto-bits connect=yes disabled=no<!--
     --><span v-show="code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpTemplate.length > 0"> template={{code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpTemplate}}</span><!--
     --><span v-show="code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpInFilter.length > 0"> input.filter={{code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpInFilter}}</span><!--
-    --><span v-show="code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpOutFilter.length > 0"> output.filter={{code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpOutFilter}}</span><!--
+    --><span v-show="code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpOutFilter.length > 0"> output.filter-chain={{code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpOutFilter}}</span><!--
     --><span v-show="code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpOutNetwork.length > 0"> output.network={{code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpOutNetwork}}</span><!--
 --> listen=yes local.role=ebgp name=STUIN-{{parsed.nodes[0].siteId}} output.redistribute=connected,ospf,bgp remote.address={{parsed.nodes[0].ip}}/32 .as={{parsed.nodes[0].asn}} .port=179 routing-table=main<!--
                         --></span><!--
