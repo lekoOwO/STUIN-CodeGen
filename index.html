@@ -8,6 +8,16 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocas/4.0.3/tocas.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tocas/4.0.3/tocas.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet" />
+    <!-- highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/base16/classic-light.min.css" integrity="sha512-AbOoRyQ+I0A7iXlMjyWZ4FHmtDMsZZTaXgWGnqd20Q79y/QQ7uIHDIF1NmmlYEvlEgKsIRTKhwXUX3CsmvZR0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js" integrity="sha512-yUUc0qWm2rhM7X0EFe82LNnv2moqArj5nro/w1bi05A09hRVeIZbN6jlMoyu0+4I/Bu4Ck/85JQIU82T82M28w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/languages/routeros.min.js" integrity="sha512-K7fPjpfbBj68/uc5nYNQMr+TJhqsvUw6ckQqcXhpItdgvv33qw22Dv3SWIb2z4f4nbx6IbfNFZe98Yt3v4ZtaA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        hljs.configure({
+            ignoreUnescapedHTML: true
+        });
+    </script>
+    <!-- highlight.js END -->
     <script type="importmap">
         {
           "imports": {
@@ -574,10 +584,10 @@
                             </div>
                         </div>
                         <div class="ts-space"></div>
-                        <div class="ts-segment">
-                            <pre class="scrollbar" style="overflow:auto;"><!--
-                            --><span v-if="
-                                    parsed.data.tunnelType === 'WireGuard' && 
+                        <div :class="`${code.nodes[0].isSuffice ? 'ts-box' : 'ts-segment'}`">
+                            <pre><!--
+                            --><code class="scrollbar language-routeros" v-if="
+                                    code.nodes[0].isSuffice = parsed.data.tunnelType === 'WireGuard' && 
                                     code.nodes[0].os === 'RouterOS' && 
                                     parsed.nodes[0].wg.port.length > 0 &&
                                     parsed.nodes[1].wg.port.length > 0 &&
@@ -593,9 +603,9 @@
     --><span v-show="code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpOutFilter.length > 0"> output.filter-chain={{code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpOutFilter}}</span><!--
     --><span v-show="code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpOutNetwork.length > 0"> output.network={{code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpOutNetwork}}</span><!--
 --> listen=yes local.role=ebgp name=STUIN-{{parsed.nodes[1].siteId}} output.redistribute=connected,ospf,bgp remote.address={{parsed.nodes[1].ip}}/32 .as={{parsed.nodes[1].asn}} .port=179 routing-table=main<!--
-                                --></span><!--
-                            --><span v-else-if="
-                            parsed.data.tunnelType === 'GRE over IPSec' && 
+                                --></code><!--
+                            --><code class="scrollbar language-routeros" v-else-if="
+                            code.nodes[0].isSuffice = parsed.data.tunnelType === 'GRE over IPSec' && 
                             code.nodes[0].os === 'RouterOS' && 
                             parsed.data.ipsecKey.length > 0
                         "><!--
@@ -607,7 +617,7 @@
     --><span v-show="code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpOutFilter.length > 0"> output.filter-chain={{code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpOutFilter}}</span><!--
     --><span v-show="code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpOutNetwork.length > 0"> output.network={{code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpOutNetwork}}</span><!--
 --> listen=yes local.role=ebgp name=STUIN-{{parsed.nodes[1].siteId}} output.redistribute=connected,ospf,bgp remote.address={{parsed.nodes[1].ip}}/32 .as={{parsed.nodes[1].asn}} .port=179 routing-table=main<!--
-                        --></span><!--
+                        --></code><!--
                             --><span v-else><!--
                                 --><div class="ts-center">⚠️條件不足，請確認輸入欄位。</div><!--
                         --></span><!--
@@ -686,10 +696,10 @@
                             </div>
                         </div>
                         <div class="ts-space"></div>
-                        <div class="ts-segment">
-                            <pre class="scrollbar" style="overflow:auto;"><!--
-                            --><span v-if="
-                                parsed.data.tunnelType === 'WireGuard' && 
+                        <div :class="`${code.nodes[1].isSuffice ? 'ts-box' : 'ts-segment'}`">
+                            <pre><!--
+                            --><code class="scrollbar language-routeros" v-if="
+                                code.nodes[1].isSuffice = parsed.data.tunnelType === 'WireGuard' && 
                                 code.nodes[1].os === 'RouterOS' && 
                                 parsed.nodes[0].wg.port.length > 0 &&
                                 parsed.nodes[1].wg.port.length > 0 &&
@@ -705,9 +715,9 @@
     --><span v-show="code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpOutFilter.length > 0"> output.filter-chain={{code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpOutFilter}}</span><!--
     --><span v-show="code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpOutNetwork.length > 0"> output.network={{code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpOutNetwork}}</span><!--
 --> listen=yes local.role=ebgp name=STUIN-{{parsed.nodes[0].siteId}} output.redistribute=connected,ospf,bgp remote.address={{parsed.nodes[0].ip}}/32 .as={{parsed.nodes[0].asn}} .port=179 routing-table=main<!--
-                            --></span><!--
-                            --><span v-else-if="
-                            parsed.data.tunnelType === 'GRE over IPSec' && 
+                            --></code><!--
+                            --><code class="scrollbar language-routeros" v-else-if="
+                            code.nodes[1].isSuffice = parsed.data.tunnelType === 'GRE over IPSec' && 
                             code.nodes[1].os === 'RouterOS' && 
                             parsed.data.ipsecKey.length > 0
                         "><!--
@@ -719,7 +729,7 @@
     --><span v-show="code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpOutFilter.length > 0"> output.filter-chain={{code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpOutFilter}}</span><!--
     --><span v-show="code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpOutNetwork.length > 0"> output.network={{code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpOutNetwork}}</span><!--
 --> listen=yes local.role=ebgp name=STUIN-{{parsed.nodes[0].siteId}} output.redistribute=connected,ospf,bgp remote.address={{parsed.nodes[0].ip}}/32 .as={{parsed.nodes[0].asn}} .port=179 routing-table=main<!--
-                        --></span><!--
+                        --></code><!--
                         --><span v-else><!--
                             --><div class="ts-center">⚠️條件不足，請確認輸入欄位。</div><!--
                         --></span><!--
@@ -787,9 +797,9 @@ WireGuard Port: {{parsed.nodes[1].wg.port}}
 </body>
 <footer>
     <script type="module">
-        import { createApp } from 'vue'
+        import { createApp, onUpdated } from 'vue'
 
-        createApp({
+        window.app = createApp({
             data() {
                 return {
                     year: new Date().getFullYear(),
@@ -832,11 +842,13 @@ WireGuard Port: {{parsed.nodes[1].wg.port}}
                         nodes: [
                             {
                                 os: "RouterOS",
-                                profile: "Leko"
+                                profile: "Leko",
+                                isSuffice: false
                             },
                             {
                                 os: "RouterOS",
-                                profile: "Leko"
+                                profile: "Leko",
+                                isSuffice: false
                             }
                         ],
                         profiles: {
@@ -908,7 +920,16 @@ WireGuard Port: {{parsed.nodes[1].wg.port}}
                     })
                     return base64url.split(",", 2)[1]
                 }
+            },
+            updated() {
+                hljs.highlightAll();
             }
-        }).mount('#app')
+        }).mount('#app');
+    </script>
+    <script>
+        function debug(){
+            window.app.parsed = {"nodes":[{"ip":"10.121.0.73","siteId":"gnehs-chunghua","asn":"4210691069","internet":"home-router.gnehs.net","wg":{"port":"1","publicKey":"SZs7G5MgxGPLtAmEfOlqEp1lyogAnTrXHIhIHvuB7B0=","privateKey":"eGb/3uNK6Zca+1K+417CrDi5eAQu1ReB7iyG6bTmsHc="}},{"ip":"10.121.0.74","siteId":"leko-ee-2","asn":"212357","internet":"2.ee.ncu.router.rextw.com","wg":{"port":"2","publicKey":"jSamMmxeEFKuT7w9MVRoPRBtlltLqJ0i+Aj4+Bo2KCI=","privateKey":"KKNxudlIDv+NieWZP8qQDOAdw/sSpxWzrDDRrdG9RUo="}}],"data":{"tunnelType":"WireGuard","ipsecKey":""},"active":true,"activePeer":2};
+
+        }
     </script>
 </footer>
