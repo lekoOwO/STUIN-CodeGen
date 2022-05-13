@@ -622,7 +622,7 @@
         "output.network": "bgpOutNetwork",
         "output.redistribute": "__bgpOutputRedistributes"
     }).map(([k, v]) => rosParam(k, code.profiles[code.nodes[0].os][code.nodes[0].profile][v])).filter(x => x).join(" ")
-} listen=yes local.role=ebgp name=STUIN-${parsed.nodes[1].siteId} remote.address=${parsed.nodes[1].ip}/32 .as=${parsed.nodes[1].asn} .port=179 routing-table=main`' />
+} listen=yes local.role=${parsed.nodes[0].asn === parsed.nodes[1].asn ? "ibgp" : "ebgp"} name=STUIN-${parsed.nodes[1].siteId} remote.address=${parsed.nodes[1].ip}/32 .as=${parsed.nodes[1].asn} .port=179 routing-table=main`' />
                             </span>
                             <span v-else-if="
                                 code.nodes[0].isSuffice = parsed.data.tunnelType === 'GRE over IPSec' && 
@@ -640,7 +640,7 @@
         "output.network": "bgpOutNetwork",
         "output.redistribute": "__bgpOutputRedistributes"
     }).map(([k, v]) => rosParam(k, code.profiles[code.nodes[0].os][code.nodes[0].profile][v])).filter(x => x).join(" ")
-} listen=yes local.role=ebgp name=STUIN-${parsed.nodes[1].siteId} remote.address=${parsed.nodes[1].ip}/32 .as=${parsed.nodes[1].asn} .port=179 routing-table=main`' />
+} listen=yes local.role=${parsed.nodes[0].asn === parsed.nodes[1].asn ? "ibgp" : "ebgp"} name=STUIN-${parsed.nodes[1].siteId} remote.address=${parsed.nodes[1].ip}/32 .as=${parsed.nodes[1].asn} .port=179 routing-table=main`' />
                             </span>
                             <span v-else>
                                 <pre><div class="ts-center">⚠️條件不足，請確認輸入欄位。</div></pre>
@@ -759,7 +759,7 @@ Object.entries({
 "output.network": "bgpOutNetwork",
 "output.redistribute": "__bgpOutputRedistributes"
 }).map(([k, v]) => rosParam(k, code.profiles[code.nodes[1].os][code.nodes[1].profile][v])).filter(x => x).join(" ")
-} listen=yes local.role=ebgp name=STUIN-${parsed.nodes[0].siteId} remote.address=${parsed.nodes[0].ip}/32 .as=${parsed.nodes[0].asn} .port=179 routing-table=main`' />
+} listen=yes local.role=${parsed.nodes[0].asn === parsed.nodes[1].asn ? "ibgp" : "ebgp"} name=STUIN-${parsed.nodes[0].siteId} remote.address=${parsed.nodes[0].ip}/32 .as=${parsed.nodes[0].asn} .port=179 routing-table=main`' />
                             </span>
                             <span v-else-if="
         code.nodes[1].isSuffice = parsed.data.tunnelType === 'GRE over IPSec' && 
@@ -777,7 +777,7 @@ Object.entries({
 "output.network": "bgpOutNetwork",
 "output.redistribute": "__bgpOutputRedistributes"
 }).map(([k, v]) => rosParam(k, code.profiles[code.nodes[1].os][code.nodes[1].profile][v])).filter(x => x).join(" ")
-} listen=yes local.role=ebgp name=STUIN-${parsed.nodes[0].siteId} remote.address=${parsed.nodes[0].ip}/32 .as=${parsed.nodes[0].asn} .port=179 routing-table=main`' />
+} listen=yes local.role=${parsed.nodes[0].asn === parsed.nodes[1].asn ? "ibgp" : "ebgp"} name=STUIN-${parsed.nodes[0].siteId} remote.address=${parsed.nodes[0].ip}/32 .as=${parsed.nodes[0].asn} .port=179 routing-table=main`' />
                             </span>
                             <span v-else>
                                 <pre><div class="ts-center">⚠️條件不足，請確認輸入欄位。</div></pre>
