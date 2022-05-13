@@ -1066,17 +1066,6 @@ WireGuard Port: {{parsed.nodes[1].wg.port}}
                     return v.length ? `${k}=${v}` : "";
                 }
             },
-            computed: {
-                cp: {
-                    cache: false,
-                    get() {
-                        return [
-                            this.code.profiles[this.code.nodes[0].os][this.code.nodes[0].profile],
-                            this.code.profiles[this.code.nodes[1].os][this.code.nodes[1].profile]
-                        ]
-                    }
-                }
-            },
             watch: {
                 "code.profiles.RouterOS": {
                     deep: true,
