@@ -618,7 +618,7 @@
     Object.entries({
         "template": "bgpTemplate",
         "input.filter": "bgpInFilter",
-        "output.filter": "bgpOutFilter",
+        "output.filter-chain": "bgpOutFilter",
         "output.network": "bgpOutNetwork",
         "output.redistribute": "__bgpOutputRedistributes"
     }).map(([k, v]) => rosParam(k, code.profiles[code.nodes[0].os][code.nodes[0].profile][v])).filter(x => x).join(" ")
@@ -636,7 +636,7 @@
     Object.entries({
         "template": "bgpTemplate",
         "input.filter": "bgpInFilter",
-        "output.filter": "bgpOutFilter",
+        "output.filter-chain": "bgpOutFilter",
         "output.network": "bgpOutNetwork",
         "output.redistribute": "__bgpOutputRedistributes"
     }).map(([k, v]) => rosParam(k, code.profiles[code.nodes[0].os][code.nodes[0].profile][v])).filter(x => x).join(" ")
@@ -755,7 +755,7 @@
 Object.entries({
 "template": "bgpTemplate",
 "input.filter": "bgpInFilter",
-"output.filter": "bgpOutFilter",
+"output.filter-chain": "bgpOutFilter",
 "output.network": "bgpOutNetwork",
 "output.redistribute": "__bgpOutputRedistributes"
 }).map(([k, v]) => rosParam(k, code.profiles[code.nodes[1].os][code.nodes[1].profile][v])).filter(x => x).join(" ")
@@ -773,7 +773,7 @@ Object.entries({
 Object.entries({
 "template": "bgpTemplate",
 "input.filter": "bgpInFilter",
-"output.filter": "bgpOutFilter",
+"output.filter-chain": "bgpOutFilter",
 "output.network": "bgpOutNetwork",
 "output.redistribute": "__bgpOutputRedistributes"
 }).map(([k, v]) => rosParam(k, code.profiles[code.nodes[1].os][code.nodes[1].profile][v])).filter(x => x).join(" ")
