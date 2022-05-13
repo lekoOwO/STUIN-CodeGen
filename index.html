@@ -9,33 +9,31 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tocas/4.0.3/tocas.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet" />
     <!-- highlight.js -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/base16/classic-light.min.css" integrity="sha512-AbOoRyQ+I0A7iXlMjyWZ4FHmtDMsZZTaXgWGnqd20Q79y/QQ7uIHDIF1NmmlYEvlEgKsIRTKhwXUX3CsmvZR0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js" integrity="sha512-yUUc0qWm2rhM7X0EFe82LNnv2moqArj5nro/w1bi05A09hRVeIZbN6jlMoyu0+4I/Bu4Ck/85JQIU82T82M28w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/languages/routeros.min.js" integrity="sha512-K7fPjpfbBj68/uc5nYNQMr+TJhqsvUw6ckQqcXhpItdgvv33qw22Dv3SWIb2z4f4nbx6IbfNFZe98Yt3v4ZtaA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script>
-        hljs.configure({
-            ignoreUnescapedHTML: true
-        });
-    </script>
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/base16/classic-light.min.css"
+        integrity="sha512-AbOoRyQ+I0A7iXlMjyWZ4FHmtDMsZZTaXgWGnqd20Q79y/QQ7uIHDIF1NmmlYEvlEgKsIRTKhwXUX3CsmvZR0g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <!-- highlight.js END -->
     <script type="importmap">
         {
           "imports": {
-            "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.prod.js"
+            "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js",
+            "highlight.js/lib/core": "https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/es/highlight.min.js",
+            "highlight.js/lib/languages/routeros": "https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/es/languages/routeros.min.js"
           }
         }
     </script>
     <style>
-        .scrollbar::-webkit-scrollbar {
+        .scrollbar code::-webkit-scrollbar {
             height: 5px;
         }
 
-        .scrollbar::-webkit-scrollbar-track {
+        .scrollbar code::-webkit-scrollbar-track {
             -webkit-border-radius: 10px;
             border-radius: 10px;
         }
 
-        .scrollbar::-webkit-scrollbar-thumb {
+        .scrollbar code::-webkit-scrollbar-thumb {
             -webkit-border-radius: 4px;
             border-radius: 4px;
             background: var(--ts-gray-800);
@@ -549,7 +547,8 @@
                                     <div class="ts-space"></div>
                                     <div class="ts-select is-fluid">
                                         <select v-model="code.nodes[0].profile">
-                                            <option :value="k" v-for="(v, k, i) in code.profiles[code.nodes[0].os]">{{ k }}</option>
+                                            <option :value="k" v-for="(v, k, i) in code.profiles[code.nodes[0].os]">{{ k
+                                                }}</option>
                                         </select>
                                     </div>
                                 </div>
@@ -557,71 +556,95 @@
                                     <div class="ts-text is-label">BGP Template</div>
                                     <div class="ts-space"></div>
                                     <div class="ts-input is-fluid">
-                                        <input type="text" placeholder="BGP Template" v-model="code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpTemplate" />
+                                        <input type="text" placeholder="BGP Template"
+                                            v-model="code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpTemplate" />
                                     </div>
                                 </div>
                                 <div class="column">
                                     <div class="ts-text is-label">BGP In-Filter</div>
                                     <div class="ts-space"></div>
                                     <div class="ts-input is-fluid">
-                                        <input type="text" placeholder="BGP In-Filter" v-model="code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpInFilter" />
+                                        <input type="text" placeholder="BGP In-Filter"
+                                            v-model="code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpInFilter" />
                                     </div>
                                 </div>
                                 <div class="column">
                                     <div class="ts-text is-label">BGP Out-Filter</div>
                                     <div class="ts-space"></div>
                                     <div class="ts-input is-fluid">
-                                        <input type="text" placeholder="BGP Out-Filter" v-model="code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpOutFilter" />
+                                        <input type="text" placeholder="BGP Out-Filter"
+                                            v-model="code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpOutFilter" />
                                     </div>
                                 </div>
                                 <div class="column">
                                     <div class="ts-text is-label">BGP Out-Networks</div>
                                     <div class="ts-space"></div>
                                     <div class="ts-input is-fluid">
-                                        <input type="text" placeholder="BGP Out-Networks" v-model="code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpOutNetwork" />
+                                        <input type="text" placeholder="BGP Out-Networks"
+                                            v-model="code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpOutNetwork" />
                                     </div>
+                                </div>
+                            </div>
+                            <div class="ts-space"></div>
+                            <div class="ts-wrap is-vertical">
+                                <div class="ts-text is-label">BGP Out-Redis</div>
+                                <div class="ts-wrap">
+                                    <span
+                                        v-for="(_, k) in code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpOutputRedistributes">
+                                        <label class="ts-checkbox">
+                                            <input type="checkbox"
+                                                v-model="code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpOutputRedistributes[k]" />
+                                            {{k}}
+                                        </label>
+                                    </span>
                                 </div>
                             </div>
                         </div>
                         <div class="ts-space"></div>
-                        <div :class="`${code.nodes[0].isSuffice ? 'ts-box' : 'ts-segment'}`">
-                            <pre><!--
-                            --><code class="scrollbar language-routeros" v-if="
-                                    code.nodes[0].isSuffice = parsed.data.tunnelType === 'WireGuard' && 
-                                    code.nodes[0].os === 'RouterOS' && 
-                                    parsed.nodes[0].wg.port.length > 0 &&
-                                    parsed.nodes[1].wg.port.length > 0 &&
-                                    parsed.nodes[1].wg.publicKey.length > 0 &&
-                                    parsed.nodes[0].wg.privateKey.length > 0
-                                "><!--
--->/interface/wireguard/add name=STUIN-{{parsed.nodes[1].siteId}}-wg private-key="{{parsed.nodes[0].wg.privateKey}}" listen-port={{parsed.nodes[0].wg.port}} mtu=1400
-/interface/wireguard/peers/add allowed-address={{parsed.nodes[1].ip}}/32,10.120.0.0/14 endpoint-address={{parsed.nodes[1].internet}} endpoint-port={{parsed.nodes[1].wg.port}} interface=STUIN-{{parsed.nodes[1].siteId}}-wg public-key="{{parsed.nodes[1].wg.publicKey}}"
-/ip/address/add address={{parsed.nodes[0].ip}}/30 interface=STUIN-{{parsed.nodes[1].siteId}}-wg
-/routing/bgp/connection/add as={{parsed.nodes[0].asn}} cisco-vpls-nlri-len-fmt=auto-bits connect=yes disabled=no<!--
-    --><span v-show="code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpTemplate.length > 0"> template={{code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpTemplate}}</span><!--
-    --><span v-show="code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpInFilter.length > 0"> input.filter={{code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpInFilter}}</span><!--
-    --><span v-show="code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpOutFilter.length > 0"> output.filter-chain={{code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpOutFilter}}</span><!--
-    --><span v-show="code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpOutNetwork.length > 0"> output.network={{code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpOutNetwork}}</span><!--
---> listen=yes local.role=ebgp name=STUIN-{{parsed.nodes[1].siteId}} output.redistribute=connected,ospf,bgp remote.address={{parsed.nodes[1].ip}}/32 .as={{parsed.nodes[1].asn}} .port=179 routing-table=main<!--
-                                --></code><!--
-                            --><code class="scrollbar language-routeros" v-else-if="
-                            code.nodes[0].isSuffice = parsed.data.tunnelType === 'GRE over IPSec' && 
-                            code.nodes[0].os === 'RouterOS' && 
-                            parsed.data.ipsecKey.length > 0
-                        "><!--
--->/interface/gre/add name=STUIN-{{parsed.nodes[1].siteId}}-GRE allow-fast-path=no remote-address={{parsed.nodes[1].internet}} ipsec-secret="{{parsed.data.ipsecKey}}" mtu=1400
-/ip/address/add address={{parsed.nodes[0].ip}}/30 interface=STUIN-{{parsed.nodes[1].siteId}}-GRE
-/routing/bgp/connection/add as={{parsed.nodes[0].asn}} cisco-vpls-nlri-len-fmt=auto-bits connect=yes disabled=no<!--
-    --><span v-show="code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpTemplate.length > 0"> template={{code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpTemplate}}</span><!--
-    --><span v-show="code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpInFilter.length > 0"> input.filter={{code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpInFilter}}</span><!--
-    --><span v-show="code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpOutFilter.length > 0"> output.filter-chain={{code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpOutFilter}}</span><!--
-    --><span v-show="code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpOutNetwork.length > 0"> output.network={{code.profiles[code.nodes[0].os][code.nodes[0].profile].bgpOutNetwork}}</span><!--
---> listen=yes local.role=ebgp name=STUIN-{{parsed.nodes[1].siteId}} output.redistribute=connected,ospf,bgp remote.address={{parsed.nodes[1].ip}}/32 .as={{parsed.nodes[1].asn}} .port=179 routing-table=main<!--
-                        --></code><!--
-                            --><span v-else><!--
-                                --><div class="ts-center">⚠️條件不足，請確認輸入欄位。</div><!--
-                        --></span><!--
-                         --></pre>
+                        <div :class="`scrollbar ${code.nodes[0].isSuffice ? 'ts-box' : 'ts-segment'}`">
+                            <span v-if="
+                                code.nodes[0].isSuffice = parsed.data.tunnelType === 'WireGuard' && 
+                                code.nodes[0].os === 'RouterOS' && 
+                                parsed.nodes[0].wg.port.length > 0 &&
+                                parsed.nodes[1].wg.port.length > 0 &&
+                                parsed.nodes[1].wg.publicKey.length > 0 &&
+                                parsed.nodes[0].wg.privateKey.length > 0
+                            ">
+                                <highlightjs language='routeros'
+:code='`/interface/wireguard/add name=STUIN-${parsed.nodes[1].siteId}-wg private-key="${parsed.nodes[0].wg.privateKey}" listen-port=${parsed.nodes[0].wg.port} mtu=1400
+/interface/wireguard/peers/add allowed-address=${parsed.nodes[1].ip}/32,10.120.0.0/14 endpoint-address=${parsed.nodes[1].internet} endpoint-port=${parsed.nodes[1].wg.port} interface=STUIN-${parsed.nodes[1].siteId}-wg public-key="${parsed.nodes[1].wg.publicKey}"
+/ip/address/add address=${parsed.nodes[0].ip}/30 interface=STUIN-${parsed.nodes[1].siteId}-wg
+/routing/bgp/connection/add as=${parsed.nodes[0].asn} cisco-vpls-nlri-len-fmt=auto-bits connect=yes disabled=no ${
+    Object.entries({
+        "template": "bgpTemplate",
+        "input.filter": "bgpInFilter",
+        "output.filter": "bgpOutFilter",
+        "output.network": "bgpOutNetwork",
+        "output.redistribute": "__bgpOutputRedistributes"
+    }).map(([k, v]) => rosParam(k, code.profiles[code.nodes[0].os][code.nodes[0].profile][v])).filter(x => x).join(" ")
+} listen=yes local.role=ebgp name=STUIN-${parsed.nodes[1].siteId} remote.address=${parsed.nodes[1].ip}/32 .as=${parsed.nodes[1].asn} .port=179 routing-table=main`' />
+                            </span>
+                            <span v-else-if="
+                                code.nodes[0].isSuffice = parsed.data.tunnelType === 'GRE over IPSec' && 
+                                code.nodes[0].os === 'RouterOS' && 
+                                parsed.data.ipsecKey.length > 0
+                            ">
+                                <highlightjs language='routeros'
+:code='`/interface/gre/add name=STUIN-${parsed.nodes[1].siteId}-GRE allow-fast-path=no remote-address=${parsed.nodes[1].internet} ipsec-secret="${parsed.data.ipsecKey}" mtu=1400
+/ip/address/add address=${parsed.nodes[0].ip}/30 interface=STUIN-${parsed.nodes[1].siteId}-GRE
+/routing/bgp/connection/add as=${parsed.nodes[0].asn} cisco-vpls-nlri-len-fmt=auto-bits connect=yes disabled=no ${
+    Object.entries({
+        "template": "bgpTemplate",
+        "input.filter": "bgpInFilter",
+        "output.filter": "bgpOutFilter",
+        "output.network": "bgpOutNetwork",
+        "output.redistribute": "__bgpOutputRedistributes"
+    }).map(([k, v]) => rosParam(k, code.profiles[code.nodes[0].os][code.nodes[0].profile][v])).filter(x => x).join(" ")
+} listen=yes local.role=ebgp name=STUIN-${parsed.nodes[1].siteId} remote.address=${parsed.nodes[1].ip}/32 .as=${parsed.nodes[1].asn} .port=179 routing-table=main`' />
+                            </span>
+                            <span v-else>
+                                <pre><div class="ts-center">⚠️條件不足，請確認輸入欄位。</div></pre>
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -629,7 +652,7 @@
                     <div class="ts-content is-secondary">
                         <div class="ts-tab is-pilled">
                             <a class="item" @click="() => code.activePeer = 1">Peer 1</a>
-                            <a class="item is-active" >Peer 2</a>
+                            <a class="item is-active">Peer 2</a>
                         </div>
                     </div>
                     <div class="ts-content">
@@ -661,7 +684,8 @@
                                     <div class="ts-space"></div>
                                     <div class="ts-select is-fluid">
                                         <select v-model="code.nodes[1].profile">
-                                            <option :value="k" v-for="(v, k, i) in code.profiles[code.nodes[0].os]">{{ k }}</option>
+                                            <option :value="k" v-for="(v, k, i) in code.profiles[code.nodes[0].os]">{{ k
+                                                }}</option>
                                         </select>
                                     </div>
                                 </div>
@@ -669,71 +693,95 @@
                                     <div class="ts-text is-label">BGP Template</div>
                                     <div class="ts-space"></div>
                                     <div class="ts-input is-fluid">
-                                        <input type="text" placeholder="BGP Template" v-model="code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpTemplate" />
+                                        <input type="text" placeholder="BGP Template"
+                                            v-model="code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpTemplate" />
                                     </div>
                                 </div>
                                 <div class="column">
                                     <div class="ts-text is-label">BGP In-Filter</div>
                                     <div class="ts-space"></div>
                                     <div class="ts-input is-fluid">
-                                        <input type="text" placeholder="BGP In-Filter" v-model="code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpInFilter" />
+                                        <input type="text" placeholder="BGP In-Filter"
+                                            v-model="code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpInFilter" />
                                     </div>
                                 </div>
                                 <div class="column">
                                     <div class="ts-text is-label">BGP Out-Filter</div>
                                     <div class="ts-space"></div>
                                     <div class="ts-input is-fluid">
-                                        <input type="text" placeholder="BGP Out-Filter" v-model="code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpOutFilter" />
+                                        <input type="text" placeholder="BGP Out-Filter"
+                                            v-model="code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpOutFilter" />
                                     </div>
                                 </div>
                                 <div class="column">
                                     <div class="ts-text is-label">BGP Out-Networks</div>
                                     <div class="ts-space"></div>
                                     <div class="ts-input is-fluid">
-                                        <input type="text" placeholder="BGP Out-Networks" v-model="code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpOutNetwork" />
+                                        <input type="text" placeholder="BGP Out-Networks"
+                                            v-model="code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpOutNetwork" />
                                     </div>
+                                </div>
+                            </div>
+                            <div class="ts-space"></div>
+                            <div class="ts-wrap is-vertical">
+                                <div class="ts-text is-label">BGP Out-Redis</div>
+                                <div class="ts-wrap">
+                                    <span
+                                        v-for="(_, k) in code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpOutputRedistributes">
+                                        <label class="ts-checkbox">
+                                            <input type="checkbox"
+                                                v-model="code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpOutputRedistributes[k]" />
+                                            {{k}}
+                                        </label>
+                                    </span>
                                 </div>
                             </div>
                         </div>
                         <div class="ts-space"></div>
-                        <div :class="`${code.nodes[1].isSuffice ? 'ts-box' : 'ts-segment'}`">
-                            <pre><!--
-                            --><code class="scrollbar language-routeros" v-if="
-                                code.nodes[1].isSuffice = parsed.data.tunnelType === 'WireGuard' && 
-                                code.nodes[1].os === 'RouterOS' && 
-                                parsed.nodes[0].wg.port.length > 0 &&
-                                parsed.nodes[1].wg.port.length > 0 &&
-                                parsed.nodes[0].wg.publicKey.length > 0 &&
-                                parsed.nodes[1].wg.privateKey.length > 0
-                            "><!--
--->/interface/wireguard/add name=STUIN-{{parsed.nodes[0].siteId}}-wg private-key="{{parsed.nodes[1].wg.privateKey}}" listen-port={{parsed.nodes[1].wg.port}} mtu=1400
-/interface/wireguard/peers/add allowed-address={{parsed.nodes[0].ip}}/32,10.120.0.0/14 endpoint-address={{parsed.nodes[0].internet}} endpoint-port={{parsed.nodes[0].wg.port}} interface=STUIN-{{parsed.nodes[0].siteId}}-wg public-key="{{parsed.nodes[0].wg.publicKey}}"
-/ip/address/add address={{parsed.nodes[1].ip}}/30 interface=STUIN-{{parsed.nodes[0].siteId}}-wg
-/routing/bgp/connection/add as={{parsed.nodes[1].asn}} cisco-vpls-nlri-len-fmt=auto-bits connect=yes disabled=no<!--
-    --><span v-show="code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpTemplate.length > 0"> template={{code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpTemplate}}</span><!--
-    --><span v-show="code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpInFilter.length > 0"> input.filter={{code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpInFilter}}</span><!--
-    --><span v-show="code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpOutFilter.length > 0"> output.filter-chain={{code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpOutFilter}}</span><!--
-    --><span v-show="code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpOutNetwork.length > 0"> output.network={{code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpOutNetwork}}</span><!--
---> listen=yes local.role=ebgp name=STUIN-{{parsed.nodes[0].siteId}} output.redistribute=connected,ospf,bgp remote.address={{parsed.nodes[0].ip}}/32 .as={{parsed.nodes[0].asn}} .port=179 routing-table=main<!--
-                            --></code><!--
-                            --><code class="scrollbar language-routeros" v-else-if="
-                            code.nodes[1].isSuffice = parsed.data.tunnelType === 'GRE over IPSec' && 
-                            code.nodes[1].os === 'RouterOS' && 
-                            parsed.data.ipsecKey.length > 0
-                        "><!--
--->/interface/gre/add name=STUIN-{{parsed.nodes[0].siteId}}-GRE allow-fast-path=no remote-address={{parsed.nodes[0].internet}} ipsec-secret="{{parsed.data.ipsecKey}}" mtu=1400
-/ip/address/add address={{parsed.nodes[1].ip}}/30 interface=STUIN-{{parsed.nodes[0].siteId}}-GRE
-/routing/bgp/connection/add as={{parsed.nodes[1].asn}} cisco-vpls-nlri-len-fmt=auto-bits connect=yes disabled=no<!--
-    --><span v-show="code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpTemplate.length > 0"> template={{code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpTemplate}}</span><!--
-    --><span v-show="code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpInFilter.length > 0"> input.filter={{code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpInFilter}}</span><!--
-    --><span v-show="code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpOutFilter.length > 0"> output.filter-chain={{code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpOutFilter}}</span><!--
-    --><span v-show="code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpOutNetwork.length > 0"> output.network={{code.profiles[code.nodes[1].os][code.nodes[1].profile].bgpOutNetwork}}</span><!--
---> listen=yes local.role=ebgp name=STUIN-{{parsed.nodes[0].siteId}} output.redistribute=connected,ospf,bgp remote.address={{parsed.nodes[0].ip}}/32 .as={{parsed.nodes[0].asn}} .port=179 routing-table=main<!--
-                        --></code><!--
-                        --><span v-else><!--
-                            --><div class="ts-center">⚠️條件不足，請確認輸入欄位。</div><!--
-                        --></span><!--
-                         --></pre>
+                        <div :class="`scrollbar ${code.nodes[1].isSuffice ? 'ts-box' : 'ts-segment'}`">
+                            <span v-if="
+        code.nodes[1].isSuffice = parsed.data.tunnelType === 'WireGuard' && 
+        code.nodes[1].os === 'RouterOS' && 
+        parsed.nodes[1].wg.port.length > 0 &&
+        parsed.nodes[0].wg.port.length > 0 &&
+        parsed.nodes[0].wg.publicKey.length > 0 &&
+        parsed.nodes[1].wg.privateKey.length > 0
+    ">
+                                <highlightjs language='routeros'
+:code='`/interface/wireguard/add name=STUIN-${parsed.nodes[0].siteId}-wg private-key="${parsed.nodes[1].wg.privateKey}" listen-port=${parsed.nodes[1].wg.port} mtu=1400
+/interface/wireguard/peers/add allowed-address=${parsed.nodes[0].ip}/32,10.120.0.0/14 endpoint-address=${parsed.nodes[0].internet} endpoint-port=${parsed.nodes[0].wg.port} interface=STUIN-${parsed.nodes[0].siteId}-wg public-key="${parsed.nodes[0].wg.publicKey}"
+/ip/address/add address=${parsed.nodes[1].ip}/30 interface=STUIN-${parsed.nodes[0].siteId}-wg
+/routing/bgp/connection/add as=${parsed.nodes[1].asn} cisco-vpls-nlri-len-fmt=auto-bits connect=yes disabled=no ${
+Object.entries({
+"template": "bgpTemplate",
+"input.filter": "bgpInFilter",
+"output.filter": "bgpOutFilter",
+"output.network": "bgpOutNetwork",
+"output.redistribute": "__bgpOutputRedistributes"
+}).map(([k, v]) => rosParam(k, code.profiles[code.nodes[1].os][code.nodes[1].profile][v])).filter(x => x).join(" ")
+} listen=yes local.role=ebgp name=STUIN-${parsed.nodes[0].siteId} remote.address=${parsed.nodes[0].ip}/32 .as=${parsed.nodes[0].asn} .port=179 routing-table=main`' />
+                            </span>
+                            <span v-else-if="
+        code.nodes[1].isSuffice = parsed.data.tunnelType === 'GRE over IPSec' && 
+        code.nodes[1].os === 'RouterOS' && 
+        parsed.data.ipsecKey.length > 0
+    ">
+                                <highlightjs language='routeros'
+:code='`/interface/gre/add name=STUIN-${parsed.nodes[0].siteId}-GRE allow-fast-path=no remote-address=${parsed.nodes[0].internet} ipsec-secret="${parsed.data.ipsecKey}" mtu=1400
+/ip/address/add address=${parsed.nodes[1].ip}/30 interface=STUIN-${parsed.nodes[0].siteId}-GRE
+/routing/bgp/connection/add as=${parsed.nodes[1].asn} cisco-vpls-nlri-len-fmt=auto-bits connect=yes disabled=no ${
+Object.entries({
+"template": "bgpTemplate",
+"input.filter": "bgpInFilter",
+"output.filter": "bgpOutFilter",
+"output.network": "bgpOutNetwork",
+"output.redistribute": "__bgpOutputRedistributes"
+}).map(([k, v]) => rosParam(k, code.profiles[code.nodes[1].os][code.nodes[1].profile][v])).filter(x => x).join(" ")
+} listen=yes local.role=ebgp name=STUIN-${parsed.nodes[0].siteId} remote.address=${parsed.nodes[0].ip}/32 .as=${parsed.nodes[0].asn} .port=179 routing-table=main`' />
+                            </span>
+                            <span v-else>
+                                <pre><div class="ts-center">⚠️條件不足，請確認輸入欄位。</div></pre>
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -748,18 +796,20 @@
                         <div class="ts-grid is-relaxed is-2-columns">
                             <div class="column">
                                 <div class="ts-input is-fluid">
-                                    <input type="text" v-model="info.peer1" placeholder="Peer 1"/>
+                                    <input type="text" v-model="info.peer1" placeholder="Peer 1" />
                                 </div>
                             </div>
                             <div class="column">
                                 <div class="ts-input is-fluid">
-                                    <input type="text" v-model="info.peer2" placeholder="Peer 2"/>
+                                    <input type="text" v-model="info.peer2" placeholder="Peer 2" />
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="ts-content is-tertiary">
-                        <div class="ts-center"><pre>STUIN Peering Info</pre></div>
+                        <div class="ts-center">
+                            <pre>STUIN Peering Info</pre>
+                        </div>
                         <div class="ts-space is-small"></div>
                         <pre>
 <span v-show="parsed.data.tunnelType === 'GRE over IPSec'"><!--
@@ -797,7 +847,15 @@ WireGuard Port: {{parsed.nodes[1].wg.port}}
 </body>
 <footer>
     <script type="module">
-        import { createApp, onUpdated } from 'vue'
+        import { createApp, onUpdated } from 'vue';
+        import hljs from 'highlight.js/lib/core';
+        import routeros from 'highlight.js/lib/languages/routeros';
+        import hljsVuePlugin from "/js/highlightjs-vue.esm.min.js"
+
+        hljs.configure({
+            ignoreUnescapedHTML: true
+        });
+        hljs.registerLanguage('routeros', routeros);
 
         window.app = createApp({
             data() {
@@ -842,41 +900,125 @@ WireGuard Port: {{parsed.nodes[1].wg.port}}
                         nodes: [
                             {
                                 os: "RouterOS",
-                                profile: "Leko",
+                                profile: "leko-ee-2",
                                 isSuffice: false
                             },
                             {
                                 os: "RouterOS",
-                                profile: "Leko",
+                                profile: "leko-ee-2",
                                 isSuffice: false
                             }
                         ],
                         profiles: {
                             RouterOS: {
-                                Leko: {
+                                "leko-ee-2": {
                                     bgpTemplate: "Leko",
                                     bgpInFilter: "STUIN-In",
                                     bgpOutFilter: "STUIN-Out",
-                                    bgpOutNetwork: "bgp-networks",
+                                    bgpOutNetwork: "STUIN-BGP",
+                                    bgpOutputRedistributes: {
+                                        connected: false,
+                                        static: false,
+                                        rip: false,
+                                        ospf: true,
+                                        bgp: true,
+                                        vpn: false,
+                                        dhcp: false,
+                                        fantasy: false,
+                                        modem: false,
+                                        copy: false
+                                    }
                                 },
-                                Edison: {
+                                "Leko": {
+                                    bgpTemplate: "Leko",
+                                    bgpInFilter: "STUIN-In",
+                                    bgpOutFilter: "STUIN-Out",
+                                    bgpOutNetwork: "STUIN-BGP",
+                                    bgpOutputRedistributes: {
+                                        connected: false,
+                                        static: false,
+                                        rip: false,
+                                        ospf: false,
+                                        bgp: true,
+                                        vpn: false,
+                                        dhcp: false,
+                                        fantasy: false,
+                                        modem: false,
+                                        copy: false
+                                    }
+                                },
+                                "fubuki-4-tw-nctu": {
                                     bgpTemplate: "STUIN",
                                     bgpInFilter: "STUIN-In",
                                     bgpOutFilter: "STUIN-Out",
                                     bgpOutNetwork: "STUIN-Out-Addresses",
+                                    bgpOutputRedistributes: {
+                                        connected: false,
+                                        static: false,
+                                        rip: false,
+                                        ospf: true,
+                                        bgp: true,
+                                        vpn: false,
+                                        dhcp: false,
+                                        fantasy: false,
+                                        modem: false,
+                                        copy: false
+                                    }
+                                },
+                                "fubuki-6-tw-nctu": {
+                                    bgpTemplate: "STUIN",
+                                    bgpInFilter: "STUIN-In",
+                                    bgpOutFilter: "STUIN-Out",
+                                    bgpOutNetwork: "STUIN-Out",
+                                    bgpOutputRedistributes: {
+                                        connected: false,
+                                        static: false,
+                                        rip: false,
+                                        ospf: false,
+                                        bgp: true,
+                                        vpn: false,
+                                        dhcp: false,
+                                        fantasy: false,
+                                        modem: false,
+                                        copy: false
+                                    }
                                 },
                                 "Guest 1": {
                                     bgpTemplate: "",
                                     bgpInFilter: "",
                                     bgpOutFilter: "",
                                     bgpOutNetwork: "",
+                                    bgpOutputRedistributes: {
+                                        connected: false,
+                                        static: false,
+                                        rip: false,
+                                        ospf: false,
+                                        bgp: false,
+                                        vpn: false,
+                                        dhcp: false,
+                                        fantasy: false,
+                                        modem: false,
+                                        copy: false
+                                    }
                                 },
                                 "Guest 2": {
                                     bgpTemplate: "",
                                     bgpInFilter: "",
                                     bgpOutFilter: "",
                                     bgpOutNetwork: "",
-                                },
+                                    bgpOutputRedistributes: {
+                                        connected: false,
+                                        static: false,
+                                        rip: false,
+                                        ospf: false,
+                                        bgp: false,
+                                        vpn: false,
+                                        dhcp: false,
+                                        fantasy: false,
+                                        modem: false,
+                                        copy: false
+                                    }
+                                }
                             }
                         }
                     },
@@ -910,7 +1052,7 @@ WireGuard Port: {{parsed.nodes[1].wg.port}}
                     this.parsed.nodes[1].wg.privateKey = "";
                 },
                 generateWireGuardKeys: () => window.wireguard.generateKeypair(),
-                generateIPSecKey: async() => {
+                generateIPSecKey: async () => {
                     let array = new Uint8Array(24);
                     window.crypto.getRandomValues(array);
                     const base64url = await new Promise((r) => {
@@ -919,17 +1061,37 @@ WireGuard Port: {{parsed.nodes[1].wg.port}}
                         reader.readAsDataURL(new Blob([array]))
                     })
                     return base64url.split(",", 2)[1]
+                },
+                rosParam(k, v) {
+                    return v.length ? `${k}=${v}` : "";
                 }
             },
-            updated() {
-                hljs.highlightAll();
+            computed: {
+                cp: {
+                    cache: false,
+                    get() {
+                        return [
+                            this.code.profiles[this.code.nodes[0].os][this.code.nodes[0].profile],
+                            this.code.profiles[this.code.nodes[1].os][this.code.nodes[1].profile]
+                        ]
+                    }
+                }
+            },
+            watch: {
+                "code.profiles.RouterOS": {
+                    deep: true,
+                    immediate: true,
+                    handler() {
+                        const data = Object.fromEntries(Object.entries(this.code.profiles["RouterOS"]).map(([k, v]) => ([k, Object.entries(v.bgpOutputRedistributes).filter(([key, value]) => value).map(([key, value]) => key)])));
+                        for (const [k, v] of Object.entries(this.code.profiles["RouterOS"])) {
+                            v.__bgpOutputRedistributes = data[k].join(",");
+                        }
+                    }
+                }
             }
-        }).mount('#app');
-    </script>
-    <script>
-        function debug(){
-            window.app.parsed = {"nodes":[{"ip":"10.121.0.73","siteId":"gnehs-chunghua","asn":"4210691069","internet":"home-router.gnehs.net","wg":{"port":"1","publicKey":"SZs7G5MgxGPLtAmEfOlqEp1lyogAnTrXHIhIHvuB7B0=","privateKey":"eGb/3uNK6Zca+1K+417CrDi5eAQu1ReB7iyG6bTmsHc="}},{"ip":"10.121.0.74","siteId":"leko-ee-2","asn":"212357","internet":"2.ee.ncu.router.rextw.com","wg":{"port":"2","publicKey":"jSamMmxeEFKuT7w9MVRoPRBtlltLqJ0i+Aj4+Bo2KCI=","privateKey":"KKNxudlIDv+NieWZP8qQDOAdw/sSpxWzrDDRrdG9RUo="}}],"data":{"tunnelType":"WireGuard","ipsecKey":""},"active":true,"activePeer":2};
+        });
 
-        }
+        window.app.use(hljsVuePlugin);
+        window.app.mount('#app');
     </script>
 </footer>
