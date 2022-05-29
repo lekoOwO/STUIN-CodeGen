@@ -601,46 +601,12 @@
                             </div>
                         </div>
                         <div class="ts-space"></div>
-                        <div :class="`scrollbar ${code.nodes[0].isSuffice ? 'ts-box' : 'ts-segment'}`">
-                            <span v-if="
-                                code.nodes[0].isSuffice = parsed.data.tunnelType === 'WireGuard' && 
-                                code.nodes[0].os === 'RouterOS' && 
-                                parsed.nodes[0].wg.port.length > 0 &&
-                                parsed.nodes[1].wg.port.length > 0 &&
-                                parsed.nodes[1].wg.publicKey.length > 0 &&
-                                parsed.nodes[0].wg.privateKey.length > 0
-                            ">
-                                <highlightjs language='routeros'
-:code='`/interface/wireguard/add name=STUIN-${parsed.nodes[1].siteId}-wg private-key="${parsed.nodes[0].wg.privateKey}" listen-port=${parsed.nodes[0].wg.port} mtu=1400
-/interface/wireguard/peers/add allowed-address=${parsed.nodes[1].ip}/32,10.120.0.0/14 endpoint-address=${parsed.nodes[1].internet} endpoint-port=${parsed.nodes[1].wg.port} interface=STUIN-${parsed.nodes[1].siteId}-wg public-key="${parsed.nodes[1].wg.publicKey}"
-/ip/address/add address=${parsed.nodes[0].ip}/30 interface=STUIN-${parsed.nodes[1].siteId}-wg
-/routing/bgp/connection/add as=${parsed.nodes[0].asn} cisco-vpls-nlri-len-fmt=auto-bits connect=yes disabled=no ${
-    Object.entries({
-        "template": "bgpTemplate",
-        "input.filter": "bgpInFilter",
-        "output.filter-chain": "bgpOutFilter",
-        "output.network": "bgpOutNetwork",
-        "output.redistribute": "__bgpOutputRedistributes"
-    }).map(([k, v]) => rosParam(k, code.profiles[code.nodes[0].os][code.nodes[0].profile][v])).filter(x => x).join(" ")
-} listen=yes local.role=${parsed.nodes[0].asn === parsed.nodes[1].asn ? "ibgp" : "ebgp"} name=STUIN-${parsed.nodes[1].siteId} remote.address=${parsed.nodes[1].ip}/32 .as=${parsed.nodes[1].asn} .port=179 routing-table=main`' />
+                        <div :class="`scrollbar ${($data.__states.wg0 || $data.__states.greipsec0) ? 'ts-box' : 'ts-segment'}`">
+                            <span v-if="$data.__states.wg0">
+                                <highlightjs language='routeros' :code='generateWireGuardRouterOSCode(0)' />
                             </span>
-                            <span v-else-if="
-                                code.nodes[0].isSuffice = parsed.data.tunnelType === 'GRE over IPSec' && 
-                                code.nodes[0].os === 'RouterOS' && 
-                                parsed.data.ipsecKey.length > 0
-                            ">
-                                <highlightjs language='routeros'
-:code='`/interface/gre/add name=STUIN-${parsed.nodes[1].siteId}-GRE allow-fast-path=no remote-address=${parsed.nodes[1].internet} ipsec-secret="${parsed.data.ipsecKey}" mtu=1400
-/ip/address/add address=${parsed.nodes[0].ip}/30 interface=STUIN-${parsed.nodes[1].siteId}-GRE
-/routing/bgp/connection/add as=${parsed.nodes[0].asn} cisco-vpls-nlri-len-fmt=auto-bits connect=yes disabled=no ${
-    Object.entries({
-        "template": "bgpTemplate",
-        "input.filter": "bgpInFilter",
-        "output.filter-chain": "bgpOutFilter",
-        "output.network": "bgpOutNetwork",
-        "output.redistribute": "__bgpOutputRedistributes"
-    }).map(([k, v]) => rosParam(k, code.profiles[code.nodes[0].os][code.nodes[0].profile][v])).filter(x => x).join(" ")
-} listen=yes local.role=${parsed.nodes[0].asn === parsed.nodes[1].asn ? "ibgp" : "ebgp"} name=STUIN-${parsed.nodes[1].siteId} remote.address=${parsed.nodes[1].ip}/32 .as=${parsed.nodes[1].asn} .port=179 routing-table=main`' />
+                            <span v-else-if="$data.__states.greipsec0">
+                                <highlightjs language='routeros' :code='generateGREOverIPSecRouterOSCode(0)' />
                             </span>
                             <span v-else>
                                 <pre><div class="ts-center">⚠️條件不足，請確認輸入欄位。</div></pre>
@@ -738,46 +704,12 @@
                             </div>
                         </div>
                         <div class="ts-space"></div>
-                        <div :class="`scrollbar ${code.nodes[1].isSuffice ? 'ts-box' : 'ts-segment'}`">
-                            <span v-if="
-        code.nodes[1].isSuffice = parsed.data.tunnelType === 'WireGuard' && 
-        code.nodes[1].os === 'RouterOS' && 
-        parsed.nodes[1].wg.port.length > 0 &&
-        parsed.nodes[0].wg.port.length > 0 &&
-        parsed.nodes[0].wg.publicKey.length > 0 &&
-        parsed.nodes[1].wg.privateKey.length > 0
-    ">
-                                <highlightjs language='routeros'
-:code='`/interface/wireguard/add name=STUIN-${parsed.nodes[0].siteId}-wg private-key="${parsed.nodes[1].wg.privateKey}" listen-port=${parsed.nodes[1].wg.port} mtu=1400
-/interface/wireguard/peers/add allowed-address=${parsed.nodes[0].ip}/32,10.120.0.0/14 endpoint-address=${parsed.nodes[0].internet} endpoint-port=${parsed.nodes[0].wg.port} interface=STUIN-${parsed.nodes[0].siteId}-wg public-key="${parsed.nodes[0].wg.publicKey}"
-/ip/address/add address=${parsed.nodes[1].ip}/30 interface=STUIN-${parsed.nodes[0].siteId}-wg
-/routing/bgp/connection/add as=${parsed.nodes[1].asn} cisco-vpls-nlri-len-fmt=auto-bits connect=yes disabled=no ${
-Object.entries({
-"template": "bgpTemplate",
-"input.filter": "bgpInFilter",
-"output.filter-chain": "bgpOutFilter",
-"output.network": "bgpOutNetwork",
-"output.redistribute": "__bgpOutputRedistributes"
-}).map(([k, v]) => rosParam(k, code.profiles[code.nodes[1].os][code.nodes[1].profile][v])).filter(x => x).join(" ")
-} listen=yes local.role=${parsed.nodes[0].asn === parsed.nodes[1].asn ? "ibgp" : "ebgp"} name=STUIN-${parsed.nodes[0].siteId} remote.address=${parsed.nodes[0].ip}/32 .as=${parsed.nodes[0].asn} .port=179 routing-table=main`' />
+                        <div :class="`scrollbar ${($data.__states.wg1 || $data.__states.greipsec1) ? 'ts-box' : 'ts-segment'}`">
+                            <span v-if="$data.__states.wg1">
+                                <highlightjs language='routeros' :code='generateWireGuardRouterOSCode(1)' />
                             </span>
-                            <span v-else-if="
-        code.nodes[1].isSuffice = parsed.data.tunnelType === 'GRE over IPSec' && 
-        code.nodes[1].os === 'RouterOS' && 
-        parsed.data.ipsecKey.length > 0
-    ">
-                                <highlightjs language='routeros'
-:code='`/interface/gre/add name=STUIN-${parsed.nodes[0].siteId}-GRE allow-fast-path=no remote-address=${parsed.nodes[0].internet} ipsec-secret="${parsed.data.ipsecKey}" mtu=1400
-/ip/address/add address=${parsed.nodes[1].ip}/30 interface=STUIN-${parsed.nodes[0].siteId}-GRE
-/routing/bgp/connection/add as=${parsed.nodes[1].asn} cisco-vpls-nlri-len-fmt=auto-bits connect=yes disabled=no ${
-Object.entries({
-"template": "bgpTemplate",
-"input.filter": "bgpInFilter",
-"output.filter-chain": "bgpOutFilter",
-"output.network": "bgpOutNetwork",
-"output.redistribute": "__bgpOutputRedistributes"
-}).map(([k, v]) => rosParam(k, code.profiles[code.nodes[1].os][code.nodes[1].profile][v])).filter(x => x).join(" ")
-} listen=yes local.role=${parsed.nodes[0].asn === parsed.nodes[1].asn ? "ibgp" : "ebgp"} name=STUIN-${parsed.nodes[0].siteId} remote.address=${parsed.nodes[0].ip}/32 .as=${parsed.nodes[0].asn} .port=179 routing-table=main`' />
+                            <span v-else-if="$data.__states.greipsec1">
+                                <highlightjs language='routeros' :code='generateGREOverIPSecRouterOSCode(1)' />
                             </span>
                             <span v-else>
                                 <pre><div class="ts-center">⚠️條件不足，請確認輸入欄位。</div></pre>
@@ -857,7 +789,7 @@ WireGuard Port: {{parsed.nodes[1].wg.port}}
         });
         hljs.registerLanguage('routeros', routeros);
 
-        window.app = createApp({
+        const app = createApp({
             data() {
                 return {
                     year: new Date().getFullYear(),
@@ -900,13 +832,11 @@ WireGuard Port: {{parsed.nodes[1].wg.port}}
                         nodes: [
                             {
                                 os: "RouterOS",
-                                profile: "leko-ee-2",
-                                isSuffice: false
+                                profile: "leko-ee-2"
                             },
                             {
                                 os: "RouterOS",
-                                profile: "leko-ee-2",
-                                isSuffice: false
+                                profile: "leko-ee-2"
                             }
                         ],
                         profiles: {
@@ -1026,6 +956,12 @@ WireGuard Port: {{parsed.nodes[1].wg.port}}
                         active: true,
                         peer1: "Peer 1",
                         peer2: "Peer 2"
+                    },
+                    __states: {
+                        wg0: false,
+                        wg1: false,
+                        greipsec0: false,
+                        greipsec1: false
                     }
                 }
             },
@@ -1062,8 +998,84 @@ WireGuard Port: {{parsed.nodes[1].wg.port}}
                     })
                     return base64url.split(",", 2)[1]
                 },
+
+                // Codes
                 rosParam(k, v) {
                     return v.length ? `${k}=${v}` : "";
+                },
+                computePeerType(){
+                    const isWireGuardPeer = (a) => {
+                        const b = (a+1)%2;
+                        const pa = this.parsed.nodes[a];
+                        const pb = this.parsed.nodes[b];
+                        const ca = this.code.nodes[a];
+
+                        return this.parsed.data.tunnelType === 'WireGuard' && 
+                            ca.os === 'RouterOS' && 
+                            pa.wg.port.length > 0 &&
+                            pb.wg.port.length > 0 &&
+                            pb.wg.publicKey.length > 0 &&
+                            pa.wg.privateKey.length > 0
+                    };
+
+                    const isGREOverIPSecPeer = (a) => {
+                        const ca = this.code.nodes[a];
+                        return this.parsed.data.tunnelType === 'GRE over IPSec' && 
+                            ca.os === 'RouterOS' && 
+                            this.parsed.data.ipsecKey.length > 0
+                    };
+
+                    const s = this.__states;
+                    const result = {};
+
+                    result.wg0 = isWireGuardPeer(0);
+                    result.wg1 = isWireGuardPeer(1);
+                    result.greipsec0 = isGREOverIPSecPeer(0);
+                    result.greipsec1 = isGREOverIPSecPeer(1);
+
+                    for(const [k, v] of Object.entries(result)){
+                        if (s[k] !== v) s[k] = v;
+                    }
+                },
+                generateWireGuardRouterOSCode(a){
+                    const b = (a+1)%2;
+                    const pa = this.parsed.nodes[a];
+                    const pb = this.parsed.nodes[b];
+                    const ca = this.code.nodes[a];
+                    return [
+                        `/interface/wireguard/add name=STUIN-${pb.siteId}-wg private-key="${pa.wg.privateKey}" listen-port=${pa.wg.port} mtu=1400`,
+                        `/interface/wireguard/peers/add allowed-address=${pb.ip}/32,10.120.0.0/14 endpoint-address=${pb.internet} endpoint-port=${pb.wg.port} interface=STUIN-${pb.siteId}-wg public-key="${pb.wg.publicKey}"`,
+                        `/ip/address/add address=${pa.ip}/30 interface=STUIN-${pb.siteId}-wg`,
+                        `/routing/bgp/connection/add as=${pa.asn} cisco-vpls-nlri-len-fmt=auto-bits connect=yes disabled=no ${
+                            Object.entries({
+                                "template": "bgpTemplate",
+                                "input.filter": "bgpInFilter",
+                                "output.filter-chain": "bgpOutFilter",
+                                "output.network": "bgpOutNetwork",
+                                "output.redistribute": "__bgpOutputRedistributes"
+                            }).map(([k, v]) => this.rosParam(k, this.code.profiles[ca.os][ca.profile][v])).filter(x => x).join(" ")
+                        } listen=yes local.role=${pa.asn === pb.asn ? "ibgp" : "ebgp"} name=STUIN-${pb.siteId} remote.address=${pb.ip}/32 .as=${pb.asn} .port=179 routing-table=main`
+                    ].join("\n");
+                },
+                generateGREOverIPSecRouterOSCode(a){
+                    const b = (a+1)%2;
+                    const pa = this.parsed.nodes[a];
+                    const pb = this.parsed.nodes[b];
+                    const ca = this.code.nodes[a];
+                    
+                    return [
+                        `/interface/gre/add name=STUIN-${pb.siteId}-GRE allow-fast-path=no remote-address=${pb.internet} ipsec-secret="${this.parsed.data.ipsecKey}" mtu=1400`,
+                        `/ip/address/add address=${pa.ip}/30 interface=STUIN-${pb.siteId}-GRE`,
+                        `/routing/bgp/connection/add as=${pa.asn} cisco-vpls-nlri-len-fmt=auto-bits connect=yes disabled=no ${
+                            Object.entries({
+                                "template": "bgpTemplate",
+                                "input.filter": "bgpInFilter",
+                                "output.filter-chain": "bgpOutFilter",
+                                "output.network": "bgpOutNetwork",
+                                "output.redistribute": "__bgpOutputRedistributes"
+                            }).map(([k, v]) => rosParam(k, this.code.profiles[ca.os][ca.profile][v])).filter(x => x).join(" ")
+                        } listen=yes local.role=${pa.asn === pb.asn ? "ibgp" : "ebgp"} name=STUIN-${pb.siteId} remote.address=${pb.ip}/32 .as=${pb.asn} .port=179 routing-table=main`
+                    ].join("\n");
                 }
             },
             watch: {
@@ -1076,11 +1088,23 @@ WireGuard Port: {{parsed.nodes[1].wg.port}}
                             v.__bgpOutputRedistributes = data[k].join(",");
                         }
                     }
+                },
+                "parsed.nodes": {
+                    deep: true,
+                    handler: "computePeerType"
+                },
+                "code.nodes": {
+                    deep: true,
+                    handler: "computePeerType"
+                },
+                "parsed.data.tunnelType": {
+                    deep: true,
+                    handler: "computePeerType"
                 }
             }
         });
 
-        window.app.use(hljsVuePlugin);
-        window.app.mount('#app');
+        app.use(hljsVuePlugin);
+        app.mount('#app');
     </script>
 </footer>
